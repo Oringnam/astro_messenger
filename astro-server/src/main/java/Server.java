@@ -1,3 +1,4 @@
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.DataInputStream;
@@ -9,6 +10,8 @@ import java.net.Socket;
 
 public class Server {
     public Server() {
+        Logger logger = Logger.getLogger(this.getClass());
+        logger.info("info");
         System.out.println("hello Server");
 
         try {
