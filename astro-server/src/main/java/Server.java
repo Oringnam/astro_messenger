@@ -1,54 +1,32 @@
-import org.apache.log4j.Logger;
-import org.junit.Test;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import network.RMI;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-public class Server {
+public class Server implements RMI {
     public Server() {
-        Logger logger = Logger.getLogger(this.getClass());
-        logger.info("info");
-        System.out.println("hello Server");
+    }
 
+    @Override
+    public String messaging(String message) {
+        return message + " - success";
+    }
+
+    /**
+     * getRegistry() 수행 시, gc가 registry 정리해버림.
+     * createRegistry(port)로 수행할 것
+     * @param args
+     */
+    public static void main(String[] args) {
+        Server server = new Server();
         try {
-            ServerSocket server = null;
-            Socket client;
+            RMI stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
 
-            server = new ServerSocket(8080);
-
-            while(true) {
-                client = server.accept();
-
-                InputStream inputStream = client.getInputStream();
-                OutputStream outputStream = client.getOutputStream();
-                DataInputStream dataInputStream = new DataInputStream(inputStream);
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
-                String message = dataInputStream.readUTF();
-                dataOutputStream.writeUTF("first response");
-                System.out.println(message);
-
-                inputStream.close();
-                outputStream.close();
-                outputStream.flush();
-                dataInputStream.close();
-                dataOutputStream.flush();
-                dataOutputStream.close();
-                client.close();
-
-                Thread.sleep(2);
-            }
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.bind("tester", stub);
+            System.out.println("Server test ready");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void serverTest() {
-        Server server = new Server();
     }
 }

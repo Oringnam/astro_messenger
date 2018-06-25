@@ -1,42 +1,27 @@
-import org.junit.Test;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import network.RMI;
+import utils.Basic;
 
 public class Client {
     public Client() {
-        System.out.println("hello Client");
+    }
+
+    public static void main(String[] args) {
+        String host = Basic.getIp();
+
+        if (host == null) {
+            System.err.println("localhost get err");
+            return;
+        }
 
         try {
-            Socket socket = new Socket("localhost", 8080);
-
-            OutputStream outputStream = socket.getOutputStream();
-            InputStream inputStream = socket.getInputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-            DataInputStream dataInputStream = new DataInputStream(inputStream);
-
-            dataOutputStream.writeUTF("first message");
-            String response = dataInputStream.readUTF();
-
-            System.out.println(response);
-
-            inputStream.close();
-            outputStream.close();
-            outputStream.flush();
-            dataInputStream.close();
-            dataOutputStream.flush();
-            dataOutputStream.close();
-            socket.close();
+            Registry registry = LocateRegistry.getRegistry(host);
+            RMI stub = (RMI) registry.lookup("tester");
+            String response = stub.messaging("message for test");
+            System.out.println("response : " + response);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void clientTest() {
-        Client client = new Client();
     }
 }

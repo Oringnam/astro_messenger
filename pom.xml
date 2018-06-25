@@ -11,6 +11,7 @@
     <modules>
         <module>astro-server</module>
         <module>astro-client</module>
+        <module>astro-common</module>
     </modules>
 
     <properties>

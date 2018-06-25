@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="astro-client" />
+        <module name="astro-common" />
         <module name="astro-server" />
         <module name="astroclient" />
         <module name="astroserver" />
