@@ -3,8 +3,6 @@ package utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AstroProperties {
     public static String getProperty(String key) {
@@ -17,14 +15,5 @@ public class AstroProperties {
             e.printStackTrace();
         }
         return (String) properties.get(key);
-    }
-
-    public static void main(String args[]) {
-
-        String test = AstroProperties.getProperty("astro.test");
-
-        Logger logger = LoggerFactory.getLogger(AstroProperties.class);
-
-        logger.info("astro logger {}", test);
     }
 }

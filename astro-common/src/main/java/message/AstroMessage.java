@@ -1,11 +1,14 @@
 package message;
 
-public class AstroMessage {
+import java.io.Serializable;
+import java.util.Arrays;
+
+public class AstroMessage implements Serializable {
     private String topic;
     private Integer index;
-    private String datetime;
+    private Long datetime;
     private String uuid;
-    private byte[] message;
+    private String message;
 
     public String getTopic() {
         return topic;
@@ -23,11 +26,11 @@ public class AstroMessage {
         this.index = index;
     }
 
-    public String getDatetime() {
+    public Long getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(String datetime) {
+    public void setDatetime(Long datetime) {
         this.datetime = datetime;
     }
 
@@ -39,11 +42,16 @@ public class AstroMessage {
         this.uuid = uuid;
     }
 
-    public byte[] getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(byte[] message) {
+    public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "AstroMessage{" + "topic='" + topic + '\'' + ", index=" + index + ", datetime=" + datetime + ", uuid='" + uuid + '\'' + ", message=" + message + '}';
     }
 }

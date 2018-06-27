@@ -3,7 +3,7 @@ package message;
 import java.util.UUID;
 
 public class AstroCoder {
-    public String getUniqueId(byte[] datetime, byte[] message) {
+    public static String getUniqueId(byte[] datetime, byte[] message) {
         byte[] input = new byte[message.length + datetime.length];
 
         System.arraycopy(datetime, 0, input, 0, datetime.length);
