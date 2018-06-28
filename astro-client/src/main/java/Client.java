@@ -54,7 +54,6 @@ public class Client {
         client.connect(host);
 
         String message = "testMessage";
-        byte[] messageBytes = message.getBytes();
         Long time = System.currentTimeMillis();
 
         AstroMessage astroMessage = new AstroMessage();
@@ -64,9 +63,7 @@ public class Client {
         astroMessage.setTopic("test");
         astroMessage.setMessage(message);
 
-        ByteBuffer buf = ByteBuffer.allocate(8);
-        byte[] timeBytes = buf.putLong(time).array();
-        String uuid = AstroCoder.getUniqueId(timeBytes, messageBytes);
+        String uuid = AstroCoder.getUniqueId(time, message);
 
         astroMessage.setUuid(uuid);
 

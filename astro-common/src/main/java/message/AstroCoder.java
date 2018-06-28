@@ -1,13 +1,19 @@
 package message;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public class AstroCoder {
-    public static String getUniqueId(byte[] datetime, byte[] message) {
-        byte[] input = new byte[message.length + datetime.length];
+    public static String getUniqueId(Long datetime, String message) {
 
-        System.arraycopy(datetime, 0, input, 0, datetime.length);
-        System.arraycopy(message, 0, input, datetime.length, message.length);
+        byte[] messageBytes = message.getBytes();
+        ByteBuffer buf = ByteBuffer.allocate(8);
+        byte[] timeBytes = buf.putLong(datetime).array();
+
+        byte[] input = new byte[messageBytes.length + timeBytes.length];
+
+        System.arraycopy(timeBytes, 0, input, 0, timeBytes.length);
+        System.arraycopy(messageBytes, 0, input, timeBytes.length, messageBytes.length);
 
         UUID uuid = UUID.nameUUIDFromBytes(input);
         return uuid.toString().replaceAll("-", "");
