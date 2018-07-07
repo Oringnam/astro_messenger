@@ -24,12 +24,7 @@ public class Server implements RMI {
     }
 
     @Override
-    public AstroMessage messaging(AstroMessage message) {
-        return message;
-    }
-
-    @Override
-    public void messaging2(AstroMessage message) {
+    public void messaging(AstroMessage message) {
         try {
             queue.put(message);
         } catch (InterruptedException e) {

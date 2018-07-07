@@ -6,6 +6,5 @@ import java.util.concurrent.ExecutorService;
 import message.AstroMessage;
 
 public interface RMI extends Remote {
-    public AstroMessage messaging(AstroMessage message) throws RemoteException;
-    public void messaging2(AstroMessage message) throws RemoteException;
+    void messaging(AstroMessage message) throws RemoteException;
 }

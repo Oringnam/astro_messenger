@@ -44,24 +44,13 @@ public class Client {
         return true;
     }
 
-    public boolean send(AstroMessage message) {
-        try {
-            Object response = stub.messaging(message);
-            logger.info("response : {}", response.toString());
-            return true;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     public void threadPool() {
         service.submit(() -> {
             while (opener.get()) {
                 try {
                     Object object = queue.poll(100, TimeUnit.MILLISECONDS);
                     if (object != null) {
-                        stub.messaging2((AstroMessage) object);
+                        stub.messaging((AstroMessage) object);
                     }
                 } catch (RemoteException | InterruptedException e) {
                     e.printStackTrace();
@@ -70,7 +59,7 @@ public class Client {
         });
     }
 
-    public void send2(AstroMessage message) {
+    public void send(AstroMessage message) {
         try {
             queue.put(message);
         } catch (InterruptedException e) {
@@ -106,7 +95,7 @@ public class Client {
         //client.send(astroMessage);
 
         for(int i=0; i<100; i++) {
-            client.send2(astroMessage);
+            client.send(astroMessage);
         }
 
         try {
