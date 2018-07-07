@@ -83,6 +83,7 @@ public class Client {
 
         AstroMessage astroMessage = new AstroMessage();
 
+
         astroMessage.setDatetime(time);
         astroMessage.setIndex(0);
         astroMessage.setTopic("test");

@@ -3,7 +3,7 @@ package message;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class AstroMessage implements Serializable {
+public class AstroMessage implements Serializable, MessageFormat {
     private String topic;
     private Integer index;
     private Long datetime;
@@ -53,5 +53,15 @@ public class AstroMessage implements Serializable {
     @Override
     public String toString() {
         return "AstroMessage{" + "topic='" + topic + '\'' + ", index=" + index + ", datetime=" + datetime + ", uuid='" + uuid + '\'' + ", message=" + message + '}';
+    }
+
+    @Override
+    public void checkValue() {
+        
+    }
+
+    @Override
+    public void checkTopic() {
+
     }
 }
