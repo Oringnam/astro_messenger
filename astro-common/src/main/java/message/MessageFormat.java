@@ -1,6 +1,6 @@
 package message;
 
 public interface MessageFormat {
-    void checkValue();
-    void checkTopic();
+    boolean validator(String value) throws Exception;
+
 }

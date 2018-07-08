@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import message.AstroMessage;
+import monitor.AstroMonitor;
 import network.RMI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,10 @@ public class Server implements RMI {
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
     private AtomicBoolean opener = new AtomicBoolean(true);
-
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private int messageCount;
+    private int messageTranserCount;
+    private AstroMonitor astromonitor = new AstroMonitor();
 
     public Server() {
         threadPool();
@@ -27,6 +30,7 @@ public class Server implements RMI {
     public void messaging(AstroMessage message) {
         try {
             queue.put(message);
+            astromonitor.increaseTransferMessageCount();
         } catch (InterruptedException e) {
             logger.error("Server.messaging : {}", e.getMessage());
             e.printStackTrace();
@@ -44,7 +48,10 @@ public class Server implements RMI {
                     boolean stored = store(value);
                     if (!stored) {
                         throw new Exception("storing is failed");
+                    } else {
+                        astromonitor.increaseMessagecCount();
                     }
+
                 } catch (Exception e) {
                     logger.info("Server.threadPool.task : {}", e.getMessage());
                     e.printStackTrace();
@@ -57,6 +64,23 @@ public class Server implements RMI {
     private boolean store(Object value) {
         logger.info("message : {} ", value.toString());
         return true;
+    }
+
+
+    public int getMessageCount() {
+        return messageCount;
+    }
+
+    public void setMessageCount(int messageCount) {
+        this.messageCount = messageCount;
+    }
+
+    public int getMessageTranserCount() {
+        return messageTranserCount;
+    }
+
+    public void setMessageTranserCount(int messageTranserCount) {
+        this.messageTranserCount = messageTranserCount;
     }
 
     public void close() {

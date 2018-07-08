@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import message.AstroCoder;
 import message.AstroMessage;
+import monitor.AstroMonitor;
 import network.RMI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,10 @@ public class Client {
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<AstroMessage>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private RMI stub;
+    private int messageCount;
+    private int messageTransferCount;
+    private AstroMonitor astromonitor  = new AstroMonitor();
+
 
     public Client() {
         threadPool();
@@ -51,6 +56,7 @@ public class Client {
                     Object object = queue.poll(100, TimeUnit.MILLISECONDS);
                     if (object != null) {
                         stub.messaging((AstroMessage) object);
+                        astromonitor.increaseMessagecCount();
                     }
                 } catch (RemoteException | InterruptedException e) {
                     e.printStackTrace();
@@ -60,12 +66,26 @@ public class Client {
     }
 
     public void send(AstroMessage message) {
+
         try {
             queue.put(message);
+            astromonitor.increaseTransferMessageCount();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+    public void setMessageCount(int messageCount) {
+        this.messageCount = messageCount;
+    }
+    public int getMessageCount() {
+        return messageCount;
+    }
+    public void setMessageTransferCount(int messageTransferCount) { this.messageTransferCount = messageTransferCount; }
+    public int getMessageTransferCount() {
+        return messageTransferCount;
+    }
+
 
     public void close() {
         opener.set(false);
@@ -83,16 +103,25 @@ public class Client {
 
         AstroMessage astroMessage = new AstroMessage();
 
-
         astroMessage.setDatetime(time);
         astroMessage.setIndex(0);
-        astroMessage.setTopic("test");
-        astroMessage.setMessage(message);
+        try {
+            astroMessage.setTopic("test");
+            astroMessage.validator(astroMessage.getMessage());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            astroMessage.setMessage(message);
+            astroMessage.validator(astroMessage.getMessage());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
         String uuid = AstroCoder.getUniqueId(time, message);
-
         astroMessage.setUuid(uuid);
-
         //client.send(astroMessage);
 
         for(int i=0; i<100; i++) {

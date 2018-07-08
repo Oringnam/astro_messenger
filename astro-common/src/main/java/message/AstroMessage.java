@@ -1,5 +1,6 @@
 package message;
 
+import javax.script.ScriptContext;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -56,12 +57,13 @@ public class AstroMessage implements Serializable, MessageFormat {
     }
 
     @Override
-    public void checkValue() {
-        
-    }
+    public boolean validator(String value) throws Exception {
+        if(!(value instanceof String)) {
+            throw new Exception();
+        } else if(value == null) {
+            throw new Exception();
+        }
 
-    @Override
-    public void checkTopic() {
-
+        return true;
     }
 }
