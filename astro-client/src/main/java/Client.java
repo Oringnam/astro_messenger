@@ -107,7 +107,7 @@ public class Client {
         astroMessage.setIndex(0);
         try {
             astroMessage.setTopic("test");
-            astroMessage.validator(astroMessage.getMessage());
+            astroMessage.validator(astroMessage.getTopic());
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -124,7 +124,7 @@ public class Client {
         astroMessage.setUuid(uuid);
         //client.send(astroMessage);
 
-        for(int i=0; i<100; i++) {
+        for(int i=0; i<10; i++) {
             client.send(astroMessage);
         }
 
