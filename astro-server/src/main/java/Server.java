@@ -1,3 +1,4 @@
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -6,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import message.AstroMessage;
 import monitor.AstroMonitor;
 import network.RMI;
@@ -13,14 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.AstroProperties;
 
-public class Server implements RMI {
+public class Server implements RMI  {
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private int messageCount;
-    private int messageTranserCount;
     private AstroMonitor astromonitor = new AstroMonitor();
+    private RMI stub;
 
     public Server() {
         threadPool();
@@ -33,6 +34,12 @@ public class Server implements RMI {
             astromonitor.increaseTransferMessageCount();
         } catch (InterruptedException e) {
             logger.error("Server.messaging : {}", e.getMessage());
+            astromonitor.failedTransferMessageCount(message.getIndex());
+            try {
+                stub.messaging(message);
+            } catch (RemoteException re) {
+                re.printStackTrace();
+            }
             e.printStackTrace();
         }
     }
@@ -66,23 +73,6 @@ public class Server implements RMI {
         return true;
     }
 
-
-    public int getMessageCount() {
-        return messageCount;
-    }
-
-    public void setMessageCount(int messageCount) {
-        this.messageCount = messageCount;
-    }
-
-    public int getMessageTranserCount() {
-        return messageTranserCount;
-    }
-
-    public void setMessageTranserCount(int messageTranserCount) {
-        this.messageTranserCount = messageTranserCount;
-    }
-
     public void close() {
         opener.set(false);
         service.shutdown();
@@ -97,10 +87,10 @@ public class Server implements RMI {
         String serverName = AstroProperties.getProperty("server.name");
 
         try {
-            RMI stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
+            server.stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
 
             Registry registry = LocateRegistry.createRegistry(1099);
-            registry.bind(serverName, stub);
+            registry.bind(serverName, server.stub);
             System.out.println("Server test ready");
         } catch (Exception e) {
             e.printStackTrace();

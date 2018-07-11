@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,16 +16,13 @@ import org.slf4j.LoggerFactory;
 import utils.AstroProperties;
 import utils.Basic;
 
-public class Client {
+public class Client implements RMI {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<AstroMessage>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private RMI stub;
-    private int messageCount;
-    private int messageTransferCount;
     private AstroMonitor astromonitor  = new AstroMonitor();
-
 
     public Client() {
         threadPool();
@@ -56,7 +54,7 @@ public class Client {
                     Object object = queue.poll(100, TimeUnit.MILLISECONDS);
                     if (object != null) {
                         stub.messaging((AstroMessage) object);
-                        astromonitor.increaseMessagecCount();
+                        astromonitor.increaseTransferMessageCount();
                     }
                 } catch (RemoteException | InterruptedException e) {
                     e.printStackTrace();
@@ -66,26 +64,23 @@ public class Client {
     }
 
     public void send(AstroMessage message) {
-
         try {
             queue.put(message);
-            astromonitor.increaseTransferMessageCount();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void setMessageCount(int messageCount) {
-        this.messageCount = messageCount;
-    }
-    public int getMessageCount() {
-        return messageCount;
-    }
-    public void setMessageTransferCount(int messageTransferCount) { this.messageTransferCount = messageTransferCount; }
-    public int getMessageTransferCount() {
-        return messageTransferCount;
-    }
 
+    @Override
+    public void messaging(AstroMessage astromessage) {
+        try {
+            logger.error("Message transfer failed : " + astromessage.getIndex());
+            stub.messaging(astromessage);
+        } catch(RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void close() {
         opener.set(false);
@@ -103,25 +98,32 @@ public class Client {
 
         AstroMessage astroMessage = new AstroMessage();
 
-        astroMessage.setDatetime(time);
-        astroMessage.setIndex(0);
         try {
-            astroMessage.setTopic("test");
-            astroMessage.validator(astroMessage.getTopic());
+            astroMessage.setDatetime(time);
+            astroMessage.setIndex(0);
+            try {
+                astroMessage.setTopic("test");
+                astroMessage.validator(astroMessage.getTopic());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                astroMessage.setMessage(message);
+                astroMessage.validator(astroMessage.getMessage());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            String uuid = AstroCoder.getUniqueId(time, message);
+            astroMessage.setUuid(uuid);
+
+            client.astromonitor.increaseMessagecCount();
         } catch(Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            astroMessage.setMessage(message);
-            astroMessage.validator(astroMessage.getMessage());
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
 
-
-        String uuid = AstroCoder.getUniqueId(time, message);
-        astroMessage.setUuid(uuid);
         //client.send(astroMessage);
 
         for(int i=0; i<10; i++) {

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="58645be7-4138-4d9e-a973-e7d4e320b6f6" name="Default" comment="">
+    <list default="true" id="58645be7-4138-4d9e-a973-e7d4e320b6f6" name="Default" comment="* 전송실패 제어 기능 추가(수정이 필요한 부분...)&#10;1. 현재 기능 : RMI interface에 있는 기능을 client에서 구현하여&#10;server에서 전송 실패시 client에 messaging을 요청하도록 구현&#10;&#10;2. 변경사항 : server단에 있는 RMI 소켓 변수를 클래스 안에서 선언하여&#10;server 클래스 내부에서 callback을 요청할 수 있도록 변경&#10;&#10;3. 개선사항 : 원래는 client에서 linkedlist로 전송했던 메세지를 저장하고&#10;전송 실패시 server에서 index를 보내어 이에 해당하는 메세지를 다시 &#10;전송하도록 하려고 했음. 하지만, 이 기능을 구현하려면 &#10;RMI interface에 기능을 추가해야 하고 server와 client에서 필요없는&#10;메소드 구현이 될것 같아서 현재 처럼 구현함...&#10;&#10;&#10;*전송 실패시 AstroMonitor에서 관리하는 기능 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/astro-client/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/astro-client/src/main/java/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/astro-client/target/classes/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/astro-client/target/classes/Client.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/astro-common/target/classes/monitor/AstroMonitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/astro-common/target/classes/monitor/AstroMonitor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/astro-server/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/astro-server/src/main/java/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/astro-server/target/classes/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/astro-server/target/classes/Server.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/astro-server/target/" />
@@ -22,17 +26,11 @@
       <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/astro-client/src/main/java/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-836">
-              <caret line="10" column="28" lean-forward="true" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AstroMessage.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/message/AstroMessage.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="64" column="9" lean-forward="true" selection-start-line="64" selection-start-column="9" selection-end-line="64" selection-end-column="9" />
+            <state relative-caret-position="38">
+              <caret line="66" column="13" selection-start-line="66" selection-start-column="13" selection-end-line="66" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -40,17 +38,11 @@
       <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/astro-server/src/main/java/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="8" selection-start-column="8" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Object.java" pinned="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/Object.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1717">
-              <caret line="62" column="33" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
+            <state relative-caret-position="589">
+              <caret line="33" column="56" selection-start-line="33" selection-start-column="56" selection-end-line="33" selection-end-column="56" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -58,8 +50,8 @@
       <file leaf-file-name="AstroMonitor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="24" column="73" selection-start-line="24" selection-start-column="73" selection-end-line="24" selection-end-column="73" />
+            <state relative-caret-position="410">
+              <caret line="27" column="29" selection-start-line="27" selection-start-column="29" selection-end-line="27" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -73,6 +65,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -90,11 +83,12 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/astro-server/src/main/resource/log4j.xml" />
         <option value="$PROJECT_DIR$/astro-common/src/main/java/Utils.java" />
-        <option value="$PROJECT_DIR$/astro-common/src/main/java/network/RMI.java" />
         <option value="$PROJECT_DIR$/astro-common/src/main/java/message/MessageFormat.java" />
         <option value="$PROJECT_DIR$/astro-common/src/main/java/message/AstroMessage.java" />
-        <option value="$PROJECT_DIR$/astro-server/src/main/java/Server.java" />
         <option value="$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java" />
+        <option value="$PROJECT_DIR$/astro-common/src/main/java/network/FailedMessage.java" />
+        <option value="$PROJECT_DIR$/astro-common/src/main/java/network/RMI.java" />
+        <option value="$PROJECT_DIR$/astro-server/src/main/java/Server.java" />
         <option value="$PROJECT_DIR$/astro-client/src/main/java/Client.java" />
       </list>
     </option>
@@ -122,6 +116,7 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="960" />
     <option name="width" value="960" />
     <option name="height" value="1040" />
   </component>
@@ -133,9 +128,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -147,6 +141,50 @@
               <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
               <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
               <item name="astro-client" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="network" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
+              <item name="astro_messenger" type="462c0819:PsiDirectoryNode" />
+              <item name="astro-common" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="astro_messenger" type="b2602c69:ProjectViewProjectNode" />
@@ -178,12 +216,13 @@
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../astroMessenger" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -313,7 +352,14 @@
       <option name="project" value="LOCAL" />
       <updated>1530945963922</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="* AstroMonitor Logger기능 추가">
+      <created>1531127820073</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1531127820073</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -338,14 +384,14 @@
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="9" />
+      <window_info active="true" anchor="bottom" id="Messages" order="9" visible="true" weight="0.32943678" />
       <window_info anchor="right" id="Palette&#9;" order="8" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="4" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="7" weight="0.32916668" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32943678" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32943678" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info id="Capture Tool" order="6" />
       <window_info id="Designer" order="3" />
@@ -357,9 +403,9 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="6" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Database" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -375,51 +421,16 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="* Logger Test" />
     <MESSAGE value="* rmi message 통합" />
-    <option name="LAST_COMMIT_MESSAGE" value="* rmi message 통합" />
+    <MESSAGE value="* AstroMonitor Logger기능 추가" />
+    <MESSAGE value="* 전송실패 제어 기능 추가(수정이 필요한 부분...)&#10;1. 현재 기능 : RMI interface에 있는 기능을 client에서 구현하여&#10;server에서 전송 실패시 client에 messaging을 요청하도록 구현&#10;&#10;2. 변경사항 : server단에 있는 RMI 소켓 변수를 클래스 안에서 선언하여&#10;server 클래스 내부에서 callback을 요청할 수 있도록 변경&#10;&#10;3. 개선사항 : 원래는 client에서 linkedlist로 전송했던 메세지를 저장하고&#10;전송 실패시 server에서 index를 보내어 이에 해당하는 메세지를 다시 &#10;전송하도록 하려고 했음. 하지만, 이 기능을 구현하려면 &#10;RMI interface에 기능을 추가해야 하고 server와 client에서 필요없는&#10;메소드 구현이 될것 같아서 현재 처럼 구현함...&#10;&#10;&#10;*전송 실패시 AstroMonitor에서 관리하는 기능 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="* 전송실패 제어 기능 추가(수정이 필요한 부분...)&#10;1. 현재 기능 : RMI interface에 있는 기능을 client에서 구현하여&#10;server에서 전송 실패시 client에 messaging을 요청하도록 구현&#10;&#10;2. 변경사항 : server단에 있는 RMI 소켓 변수를 클래스 안에서 선언하여&#10;server 클래스 내부에서 callback을 요청할 수 있도록 변경&#10;&#10;3. 개선사항 : 원래는 client에서 linkedlist로 전송했던 메세지를 저장하고&#10;전송 실패시 server에서 index를 보내어 이에 해당하는 메세지를 다시 &#10;전송하도록 하려고 했음. 하지만, 이 기능을 구현하려면 &#10;RMI interface에 기능을 추가해야 하고 server와 client에서 필요없는&#10;메소드 구현이 될것 같아서 현재 처럼 구현함...&#10;&#10;&#10;*전송 실패시 AstroMonitor에서 관리하는 기능 추가" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25-sources.jar!/org/slf4j/Logger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="606" column="16" selection-start-line="606" selection-start-column="16" selection-end-line="606" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/Properties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-306">
-          <caret line="121" column="6" selection-start-line="121" selection-start-column="6" selection-end-line="121" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/utils/AstroProperties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="11" column="41" lean-forward="true" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/resources/astro.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/concurrent/Future.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1368">
-          <caret line="141" column="28" selection-start-line="141" selection-start-column="28" selection-end-line="141" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/concurrent/ExecutorService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="263" column="8" selection-start-line="263" selection-start-column="8" selection-end-line="263" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/network/RMI.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -434,6 +445,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="257">
           <caret line="83" column="16" lean-forward="true" selection-start-line="83" selection-start-column="16" selection-end-line="83" selection-end-column="16" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -561,31 +575,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/resources/astro.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19">
-          <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/rmi/server/UnicastRemoteObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1366">
-          <caret line="316" column="25" selection-start-line="316" selection-start-column="25" selection-end-line="316" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/astro-common/src/main/resources/log4j.properties">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="57">
           <caret line="3" column="39" selection-start-line="3" selection-start-column="39" selection-end-line="3" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/rmi/registry/Registry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="682">
-          <caret line="135" column="29" selection-start-line="135" selection-start-column="29" selection-end-line="135" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -603,20 +596,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/utils/Basic.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="11" column="47" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/utils/AstroProperties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="11" column="41" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/concurrent/LinkedBlockingQueue.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="117">
@@ -627,10 +606,104 @@
     <entry file="file://$PROJECT_DIR$/astro-client/target/classes/Client.class">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/message/AstroMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="798">
+          <caret line="64" column="9" selection-start-line="64" selection-start-column="9" selection-end-line="64" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/rmi/registry/Registry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3">
+          <caret line="102" column="18" selection-start-line="102" selection-start-column="18" selection-end-line="102" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/rmi/Remote.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="49" column="17" selection-start-line="49" selection-start-column="17" selection-end-line="49" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/util/Properties.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="131" column="14" lean-forward="true" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/resources/astro.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/Runnable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="453">
+          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/Class.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="676" column="23" selection-start-line="676" selection-start-column="23" selection-end-line="676" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/ClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="1305" column="23" selection-start-line="1305" selection-start-column="23" selection-end-line="1305" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/utils/Basic.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
+          <folding>
+            <element signature="e#273#274#0" expanded="true" />
+            <element signature="e#338#339#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/network/FailedMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="3" column="43" lean-forward="true" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/network/RMI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+        <state relative-caret-position="152">
+          <caret line="8" column="64" selection-start-line="8" selection-start-column="64" selection-end-line="8" selection-end-column="64" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/rmi/server/UnicastRemoteObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="155" column="7" lean-forward="true" selection-start-line="155" selection-start-column="7" selection-end-line="155" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/utils/AstroProperties.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="27" column="29" selection-start-line="27" selection-start-column="29" selection-end-line="27" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -639,39 +712,28 @@
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_121/src.zip!/java/lang/Object.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1717">
+        <state relative-caret-position="19">
           <caret line="62" column="33" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/monitor/AstroMonitor.java">
+    <entry file="file://$PROJECT_DIR$/astro-server/src/main/java/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="24" column="73" selection-start-line="24" selection-start-column="73" selection-end-line="24" selection-end-column="73" />
+        <state relative-caret-position="589">
+          <caret line="33" column="56" selection-start-line="33" selection-start-column="56" selection-end-line="33" selection-end-column="56" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/astro-server/src/main/java/Server.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="8" selection-start-column="8" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/astro-common/src/main/java/message/AstroMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="64" column="9" lean-forward="true" selection-start-line="64" selection-start-column="9" selection-end-line="64" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/astro-client/src/main/java/Client.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-836">
-          <caret line="10" column="28" lean-forward="true" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
+        <state relative-caret-position="38">
+          <caret line="66" column="13" selection-start-line="66" selection-start-column="13" selection-end-line="66" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
