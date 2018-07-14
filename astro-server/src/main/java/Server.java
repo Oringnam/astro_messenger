@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import message.AstroMessage;
 import monitor.AstroMonitor;
 import network.RMI;
@@ -42,6 +41,7 @@ public class Server implements RMI  {
             }
             e.printStackTrace();
         }
+
     }
 
     private void threadPool() {
@@ -52,11 +52,12 @@ public class Server implements RMI  {
                     if (value == null) {
                         continue;
                     }
+
                     boolean stored = store(value);
-                    if (!stored) {
-                        throw new Exception("storing is failed");
-                    } else {
+                    if (stored) {
                         astromonitor.increaseMessagecCount();
+                    } else {
+                        throw new Exception("storing is failed");
                     }
 
                 } catch (Exception e) {
@@ -69,8 +70,18 @@ public class Server implements RMI  {
 
     // 저장 방식 정해지면, 구현해야함. db를 쓸것인지, 파일로 저장할 것인지
     private boolean store(Object value) {
+        if(isFull()) {
+            logger.info("Storage is full");
+            return false;
+        }
         logger.info("message : {} ", value.toString());
+
         return true;
+    }
+
+    private boolean isFull() {
+        //저장 실패시 return true
+        return false;
     }
 
     public void close() {

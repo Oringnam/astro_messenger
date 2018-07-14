@@ -1,7 +1,6 @@
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,7 +18,7 @@ import utils.Basic;
 public class Client implements RMI {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ExecutorService service = Executors.newSingleThreadExecutor();
-    private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<AstroMessage>();
+    private LinkedBlockingQueue<AstroMessage> messageQueue = new LinkedBlockingQueue<AstroMessage>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private RMI stub;
     private AstroMonitor astromonitor  = new AstroMonitor();
@@ -51,7 +50,7 @@ public class Client implements RMI {
         service.submit(() -> {
             while (opener.get()) {
                 try {
-                    Object object = queue.poll(100, TimeUnit.MILLISECONDS);
+                    Object object = messageQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (object != null) {
                         stub.messaging((AstroMessage) object);
                         astromonitor.increaseTransferMessageCount();
@@ -65,7 +64,7 @@ public class Client implements RMI {
 
     public void send(AstroMessage message) {
         try {
-            queue.put(message);
+            messageQueue.put(message);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -93,41 +92,21 @@ public class Client implements RMI {
         Client client = new Client();
         client.connect(host);
 
-        String message = "testMessage";
-        Long time = System.currentTimeMillis();
-
+        /*Message 생성, 송신*/
         AstroMessage astroMessage = new AstroMessage();
 
-        try {
-            astroMessage.setDatetime(time);
-            astroMessage.setIndex(0);
-            try {
-                astroMessage.setTopic("test");
-                astroMessage.validator(astroMessage.getTopic());
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                astroMessage.setMessage(message);
-                astroMessage.validator(astroMessage.getMessage());
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-
+        for(int index = 0; index < 10000; ++index) {
+            Long time = System.currentTimeMillis();
+            String topic = "test";
+            String message = "testMessage";
             String uuid = AstroCoder.getUniqueId(time, message);
-            astroMessage.setUuid(uuid);
 
-            client.astromonitor.increaseMessagecCount();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-
-        //client.send(astroMessage);
-
-        for(int i=0; i<10; i++) {
-            client.send(astroMessage);
+            if(astroMessage.makeMessage(index, time, topic, message, uuid)) {
+                client.astromonitor.increaseMessagecCount();
+                client.send(astroMessage);
+            } else {
+                client.logger.error("Message error");
+            }
         }
 
         try {

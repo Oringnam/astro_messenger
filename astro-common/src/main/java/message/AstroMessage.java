@@ -58,11 +58,35 @@ public class AstroMessage implements Serializable, MessageFormat {
 
     @Override
     public boolean validator(String value) throws Exception {
-        if(!(value instanceof String)) {
-            throw new Exception();
-        } else if(value == null) {
+        if(value == null) {
             throw new Exception();
         }
+
+        return true;
+    }
+
+    @Override
+    public boolean makeMessage(int index, long time, String topic, String message, String uuid) {
+        setIndex(index);
+        setDatetime(time);
+
+        try {
+            setTopic(topic);
+            validator(getTopic());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            setMessage(message);
+            validator(getMessage());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        setUuid(uuid);
 
         return true;
     }
