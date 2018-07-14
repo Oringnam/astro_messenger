@@ -1,7 +1,0 @@
-message\AstroCoder.class
-utils\Basic.class
-utils\AstroProperties.class
-message\MessageFormat.class
-network\RMI.class
-monitor\AstroMonitor.class
-message\AstroMessage.class
