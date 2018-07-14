@@ -46,6 +46,7 @@ public class Client implements RMI {
         return true;
     }
 
+
     public void threadPool() {
         service.submit(() -> {
             while (opener.get()) {
