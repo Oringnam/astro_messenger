@@ -1,17 +1,93 @@
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import message.AstroMessage;
+import monitor.AstroMonitor;
 import network.RMI;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.AstroProperties;
 
-public class Server implements RMI {
+public class Server implements RMI  {
+    private ExecutorService service = Executors.newSingleThreadExecutor();
+    private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
+    private AtomicBoolean opener = new AtomicBoolean(true);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private AstroMonitor astromonitor = new AstroMonitor();
+    private RMI stub;
+
     public Server() {
+        threadPool();
     }
 
     @Override
-    public AstroMessage messaging(AstroMessage message) {
-        return message;
+    public void messaging(AstroMessage message) {
+        try {
+            queue.put(message);
+            astromonitor.increaseTransferMessageCount();
+        } catch (InterruptedException e) {
+            logger.error("Server.messaging : {}", e.getMessage());
+            astromonitor.failedTransferMessageCount(message.getIndex());
+            try {
+                stub.messaging(message);
+            } catch (RemoteException re) {
+                re.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+
+    }
+
+    private void threadPool() {
+        service.submit(() -> {
+            while (opener.get()) {
+                try {
+                    Object value = queue.poll(100, TimeUnit.MILLISECONDS);
+                    if (value == null) {
+                        continue;
+                    }
+
+                    boolean stored = store(value);
+                    if (stored) {
+                        astromonitor.increaseMessagecCount();
+                    } else {
+                        throw new Exception("storing is failed");
+                    }
+
+                } catch (Exception e) {
+                    logger.info("Server.threadPool.task : {}", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    // 저장 방식 정해지면, 구현해야함. db를 쓸것인지, 파일로 저장할 것인지
+    private boolean store(Object value) {
+        if(isFull()) {
+            logger.info("Storage is full");
+            return false;
+        }
+        logger.info("message : {} ", value.toString());
+
+        return true;
+    }
+
+    private boolean isFull() {
+        //저장 실패시 return true
+        return false;
+    }
+
+    public void close() {
+        opener.set(false);
+        service.shutdown();
     }
 
     /**
@@ -23,13 +99,21 @@ public class Server implements RMI {
         String serverName = AstroProperties.getProperty("server.name");
 
         try {
-            RMI stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
+            server.stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
 
             Registry registry = LocateRegistry.createRegistry(1099);
-            registry.bind(serverName, stub);
+            registry.bind(serverName, server.stub);
             System.out.println("Server test ready");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //server.close();
     }
 }

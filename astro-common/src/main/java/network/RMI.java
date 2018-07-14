@@ -5,5 +5,5 @@ import java.rmi.RemoteException;
 import message.AstroMessage;
 
 public interface RMI extends Remote {
-    public AstroMessage messaging(AstroMessage message) throws RemoteException;
+    void messaging(AstroMessage message) throws RemoteException;
 }

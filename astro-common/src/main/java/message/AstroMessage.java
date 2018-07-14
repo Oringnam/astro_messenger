@@ -1,9 +1,10 @@
 package message;
 
+import javax.script.ScriptContext;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class AstroMessage implements Serializable {
+public class AstroMessage implements Serializable, MessageFormat {
     private String topic;
     private Integer index;
     private Long datetime;
@@ -53,5 +54,40 @@ public class AstroMessage implements Serializable {
     @Override
     public String toString() {
         return "AstroMessage{" + "topic='" + topic + '\'' + ", index=" + index + ", datetime=" + datetime + ", uuid='" + uuid + '\'' + ", message=" + message + '}';
+    }
+
+    @Override
+    public boolean validator(String value) throws Exception {
+        if(value == null) {
+            throw new Exception();
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean makeMessage(int index, long time, String topic, String message, String uuid) {
+        setIndex(index);
+        setDatetime(time);
+
+        try {
+            setTopic(topic);
+            validator(getTopic());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            setMessage(message);
+            validator(getMessage());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        setUuid(uuid);
+
+        return true;
     }
 }
