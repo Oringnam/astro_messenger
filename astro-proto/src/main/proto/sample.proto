@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "astro.com.samples";
+option java_outer_classname = "SampleProto";
+option objc_class_prefix = "RTG";
+
+package sample;
+
+service Sample {
+    rpc sendMessage(AstroMessage) returns (Result) {}
+}
+
+message AstroMessage {
+    string topic = 1;
+    int32 index = 2;
+    int64 datetime = 3;
+    string uuid = 4;
+    string message = 5;
+}
+
+message Result {
+    int32 resultCode = 1;
+    string resultMessage = 2;
+}
