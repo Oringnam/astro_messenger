@@ -6,6 +6,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import astro.com.samples.*;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import message.AstroCoder;
 import message.AstroMessage;
 import monitor.AstroMonitor;
@@ -22,9 +25,15 @@ public class Client implements RMI {
     private AtomicBoolean opener = new AtomicBoolean(true);
     private RMI stub;
     private AstroMonitor astromonitor  = new AstroMonitor();
+    private ManagedChannel channel;
+    private SampleGrpc.SampleBlockingStub blockingStub;
+
 
     public Client() {
         threadPool();
+    }
+    public Client(String host, int port) {
+        connect(host, port);
     }
 
     public boolean connect(String host) {
@@ -46,8 +55,8 @@ public class Client implements RMI {
         return true;
     }
 
-
     public void threadPool() {
+
         service.submit(() -> {
             while (opener.get()) {
                 try {
@@ -82,6 +91,44 @@ public class Client implements RMI {
         }
     }
 
+    private boolean connect(String host, int port) {
+        if(host == null) {
+            logger.error("Server not found");
+            return false;
+        }
+
+        try {
+            this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+            this.blockingStub = SampleGrpc.newBlockingStub(channel);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    public void send(astro.com.samples.AstroMessage message) {
+        try {
+            blockingStub.sendMessage(message);
+        } catch(Exception e) {
+            logger.error("Message send fail");
+            e.printStackTrace();
+        }
+
+    }
+
+    public astro.com.samples.AstroMessage makeMessage(int index, long time, String topic, String message, String uuid) {
+        astro.com.samples.AstroMessage.Builder astroMessage = astro.com.samples.AstroMessage.newBuilder();
+        astroMessage.setIndex(index);
+        astroMessage.setDatetime(time);
+        astroMessage.setTopic(topic);
+        astroMessage.setMessage(message);
+        astroMessage.setUuid(uuid);
+
+        return astroMessage.build();
+    }
+
     public void close() {
         opener.set(false);
         service.shutdown();
@@ -90,11 +137,7 @@ public class Client implements RMI {
     public static void main(String[] args) {
         String host = Basic.getHostIp();
 
-        Client client = new Client();
-        client.connect(host);
-
-        /*Message 생성, 송신*/
-        AstroMessage astroMessage = new AstroMessage();
+        Client client = new Client(host, 8080);
 
         for(int index = 0; index < 10000; ++index) {
             Long time = System.currentTimeMillis();
@@ -102,12 +145,8 @@ public class Client implements RMI {
             String message = "testMessage";
             String uuid = AstroCoder.getUniqueId(time, message);
 
-            if(astroMessage.makeMessage(index, time, topic, message, uuid)) {
-                client.astromonitor.increaseMessagecCount();
-                client.send(astroMessage);
-            } else {
-                client.logger.error("Message error");
-            }
+            astro.com.samples.AstroMessage astroMessage = client.makeMessage(index, time, topic, message,uuid);
+            client.send(astroMessage);
         }
 
         try {

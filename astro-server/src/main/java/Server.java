@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -7,6 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
 import message.AstroMessage;
 import monitor.AstroMonitor;
 import network.RMI;
@@ -15,6 +19,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.AstroProperties;
 
+import astro.com.samples.*;
+
+class MessageImplementation extends  SampleGrpc.SampleImplBase {
+    private astro.com.samples.AstroMessage astroMessage;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public astro.com.samples.AstroMessage getAstroMessage() {
+        return astroMessage;
+    }
+
+    @Override
+    public void sendMessage(astro.com.samples.AstroMessage message, StreamObserver<Result> responseObserver) {
+        if(message == null) {
+            logger.error("Message transition error");
+            return;
+        }
+        astroMessage = message;
+        responseObserver.onCompleted();
+    }
+}
+
 public class Server implements RMI  {
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
@@ -22,9 +47,12 @@ public class Server implements RMI  {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private AstroMonitor astromonitor = new AstroMonitor();
     private RMI stub;
+    private io.grpc.Server server;
+
 
     public Server() {
-        threadPool();
+        //threadPool();
+        serverOpen();
     }
 
     @Override
@@ -69,6 +97,40 @@ public class Server implements RMI  {
         });
     }
 
+    private void serverOpen()  {
+        MessageImplementation messageImplementation = new MessageImplementation();
+
+        try {
+            server = ServerBuilder.forPort(8080).addService(messageImplementation).build().start();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Server is ready");
+
+        service.submit(()-> {
+            while(opener.get()) {
+                try {
+                    Object value = messageImplementation.getAstroMessage();
+                    if(value == null) {
+                        continue;
+                    }
+
+                    int index = ((astro.com.samples.AstroMessage) value).getIndex();
+                    long time = ((astro.com.samples.AstroMessage) value).getDatetime();
+                    String topic = ((astro.com.samples.AstroMessage) value).getTopic();
+                    String message = ((astro.com.samples.AstroMessage) value).getMessage();
+                    String uuid = ((astro.com.samples.AstroMessage) value).getUuid();
+
+                    System.out.println(index + " " + time + " " + topic + " " + message + " " + uuid + " ");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     // 저장 방식 정해지면, 구현해야함. db를 쓸것인지, 파일로 저장할 것인지
     private boolean store(Object value) {
         if(isFull()) {
@@ -96,7 +158,7 @@ public class Server implements RMI  {
      */
     public static void main(String[] args) {
         Server server = new Server();
-        String serverName = AstroProperties.getProperty("server.name");
+/*        String serverName = AstroProperties.getProperty("server.name");
 
         try {
             server.stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
@@ -106,7 +168,7 @@ public class Server implements RMI  {
             System.out.println("Server test ready");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         try {
             TimeUnit.SECONDS.sleep(5);
