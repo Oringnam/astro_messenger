@@ -57,7 +57,7 @@ public class AstroMessage implements Serializable, MessageFormat {
     }
 
     @Override
-    public boolean validator(String value) throws Exception {
+       public boolean validator(String value) throws Exception {
         if(value == null) {
             throw new Exception();
         }
@@ -65,7 +65,7 @@ public class AstroMessage implements Serializable, MessageFormat {
         return true;
     }
 
-    @Override
+//    @Override
     public boolean makeMessage(int index, long time, String topic, String message, String uuid) {
         setIndex(index);
         setDatetime(time);

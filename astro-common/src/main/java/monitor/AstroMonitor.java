@@ -17,15 +17,15 @@ public class AstroMonitor {
 
     public void increaseMessagecCount() {
         messageCount.set(messageCount.get()+1);
-        logger.debug("Message is created : " + messageCount.get());
+        logger.info("Message is created : " + messageCount.get());
     }
 
     public void increaseTransferMessageCount() {
         transferMessageCount.set(transferMessageCount.get()+1);
-        logger.debug("Message is transfered : " + transferMessageCount.get());
+        logger.info("Message is transfered : " + transferMessageCount.get());
     }
 
     public void failedTransferMessageCount(int index) {
-        logger.debug("Message is failed to transfer" + index);
+        logger.error("Failed to transfer message num : " + index);
     }
 }

@@ -21,25 +21,6 @@ import utils.AstroProperties;
 
 import astro.com.samples.*;
 
-class MessageImplementation extends  SampleGrpc.SampleImplBase {
-    private astro.com.samples.AstroMessage astroMessage;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public astro.com.samples.AstroMessage getAstroMessage() {
-        return astroMessage;
-    }
-
-    @Override
-    public void sendMessage(astro.com.samples.AstroMessage message, StreamObserver<Result> responseObserver) {
-        if(message == null) {
-            logger.error("Message transition error");
-            return;
-        }
-        astroMessage = message;
-        responseObserver.onCompleted();
-    }
-}
-
 public class Server implements RMI  {
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
@@ -48,7 +29,6 @@ public class Server implements RMI  {
     private AstroMonitor astromonitor = new AstroMonitor();
     private RMI stub;
     private io.grpc.Server server;
-
 
     public Server() {
         //threadPool();
@@ -97,6 +77,8 @@ public class Server implements RMI  {
         });
     }
 
+    /*** Grpc 수신 ***/
+
     private void serverOpen()  {
         MessageImplementation messageImplementation = new MessageImplementation();
 
@@ -111,9 +93,11 @@ public class Server implements RMI  {
         service.submit(()-> {
             while(opener.get()) {
                 try {
-                    Object value = messageImplementation.getAstroMessage();
+                    Object value = messageImplementation.queue.poll(100, TimeUnit.MILLISECONDS);
                     if(value == null) {
                         continue;
+                    } else {
+                        astromonitor.increaseMessagecCount();
                     }
 
                     int index = ((astro.com.samples.AstroMessage) value).getIndex();
@@ -177,5 +161,32 @@ public class Server implements RMI  {
         }
 
         //server.close();
+    }
+
+    class MessageImplementation extends SampleGrpc.SampleImplBase {
+        public LinkedBlockingQueue<astro.com.samples.AstroMessage> queue = new LinkedBlockingQueue<astro.com.samples.AstroMessage>();
+
+        @Override
+        public void sendMessage(astro.com.samples.AstroMessage message, StreamObserver<Result> responseObserver) {
+            if (message == null) {
+                astromonitor.failedTransferMessageCount(message.getIndex());
+                Result result = Result.newBuilder().setResultCode(1).setResultMessage("Fail").build();
+                responseObserver.onNext(result);
+                responseObserver.onCompleted();
+                return;
+            }
+
+            try {
+                queue.put(message);
+                astromonitor.increaseTransferMessageCount();
+                Result result = Result.newBuilder().setResultCode(0).setResultMessage("Success").build();
+                responseObserver.onNext(result);
+                responseObserver.onCompleted();
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
     }
 }

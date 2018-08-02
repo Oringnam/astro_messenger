@@ -1,6 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,6 +12,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import message.AstroCoder;
 import message.AstroMessage;
+import message.MessageFormat;
 import monitor.AstroMonitor;
 import network.RMI;
 import org.slf4j.Logger;
@@ -18,22 +20,21 @@ import org.slf4j.LoggerFactory;
 import utils.AstroProperties;
 import utils.Basic;
 
-public class Client implements RMI {
+public class Client implements RMI, MessageFormat {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private LinkedBlockingQueue<AstroMessage> messageQueue = new LinkedBlockingQueue<AstroMessage>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private RMI stub;
     private AstroMonitor astromonitor  = new AstroMonitor();
+
     private ManagedChannel channel;
     private SampleGrpc.SampleBlockingStub blockingStub;
+    private LinkedBlockingQueue<astro.com.samples.AstroMessage> sendingQueue = new LinkedBlockingQueue<astro.com.samples.AstroMessage>();
 
 
     public Client() {
         threadPool();
-    }
-    public Client(String host, int port) {
-        connect(host, port);
     }
 
     public boolean connect(String host) {
@@ -56,7 +57,6 @@ public class Client implements RMI {
     }
 
     public void threadPool() {
-
         service.submit(() -> {
             while (opener.get()) {
                 try {
@@ -80,7 +80,6 @@ public class Client implements RMI {
         }
     }
 
-
     @Override
     public void messaging(AstroMessage astromessage) {
         try {
@@ -89,6 +88,34 @@ public class Client implements RMI {
         } catch(RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /*** Grpc 전송 ***/
+
+    public Client(String host, int port) {
+        connect(host, port);
+    }
+
+    public void openClient() {
+        service.submit(() -> {
+            while (opener.get()) {
+                try {
+                    Object object = sendingQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (object != null) {
+                        Result result = blockingStub.sendMessage((astro.com.samples.AstroMessage)object);
+                        astromonitor.increaseTransferMessageCount();
+                        while(result.getResultCode() == 1) {
+                            astromonitor.failedTransferMessageCount(((astro.com.samples.AstroMessage) object).getIndex());
+                            result = blockingStub.sendMessage((astro.com.samples.AstroMessage)object);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private boolean connect(String host, int port) {
@@ -101,6 +128,7 @@ public class Client implements RMI {
             this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
             this.blockingStub = SampleGrpc.newBlockingStub(channel);
         } catch(Exception e) {
+            logger.error("Connection fail");
             e.printStackTrace();
             return false;
         }
@@ -110,23 +138,53 @@ public class Client implements RMI {
 
     public void send(astro.com.samples.AstroMessage message) {
         try {
-            blockingStub.sendMessage(message);
+            sendingQueue.put(message);
         } catch(Exception e) {
-            logger.error("Message send fail");
             e.printStackTrace();
         }
-
     }
 
     public astro.com.samples.AstroMessage makeMessage(int index, long time, String topic, String message, String uuid) {
-        astro.com.samples.AstroMessage.Builder astroMessage = astro.com.samples.AstroMessage.newBuilder();
-        astroMessage.setIndex(index);
-        astroMessage.setDatetime(time);
-        astroMessage.setTopic(topic);
-        astroMessage.setMessage(message);
-        astroMessage.setUuid(uuid);
+        try {
+            try {
+                validator(topic);
+            } catch(Exception e) {
+                logger.error("Invalid topic");
+                e.printStackTrace();
+                return null;
+            }
 
-        return astroMessage.build();
+            try {
+                validator(message);
+            } catch (Exception e) {
+                logger.error("Invalid message");
+                e.printStackTrace();
+                return null;
+            }
+
+            astro.com.samples.AstroMessage.Builder astroMessage = astro.com.samples.AstroMessage.newBuilder();
+            astroMessage.setIndex(index);
+            astroMessage.setDatetime(time);
+            astroMessage.setTopic(topic);
+            astroMessage.setMessage(message);
+            astroMessage.setUuid(uuid);
+
+            astromonitor.increaseMessagecCount();
+            return astroMessage.build();
+        } catch(Exception e) {
+            logger.error("Message creation fail");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean validator(String value) throws Exception {
+        if(value == null) {
+            throw new Exception();
+        }
+
+        return false;
     }
 
     public void close() {
@@ -138,15 +196,20 @@ public class Client implements RMI {
         String host = Basic.getHostIp();
 
         Client client = new Client(host, 8080);
+        client.openClient();
 
-        for(int index = 0; index < 10000; ++index) {
+        for(int index = 0; index < 10; ++index) {
             Long time = System.currentTimeMillis();
             String topic = "test";
             String message = "testMessage";
             String uuid = AstroCoder.getUniqueId(time, message);
 
             astro.com.samples.AstroMessage astroMessage = client.makeMessage(index, time, topic, message,uuid);
-            client.send(astroMessage);
+            try {
+                client.send(astroMessage);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
         try {
