@@ -1,95 +1,52 @@
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import message.AstroMessage;
 import monitor.AstroMonitor;
-import network.RMI;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.AstroProperties;
+import astro.com.message.*;
 
-import astro.com.samples.*;
-
-public class Server implements RMI  {
-    private ExecutorService service = Executors.newSingleThreadExecutor();
+public class Server {
+    private ExecutorService service = Executors.newScheduledThreadPool(10);
     private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
     private AtomicBoolean opener = new AtomicBoolean(true);
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private AstroMonitor astromonitor = new AstroMonitor();
-    private RMI stub;
+
     private io.grpc.Server server;
+    private MessageImplementation messageImplementation = new MessageImplementation();
 
-    public Server() {
-        //threadPool();
-        serverOpen();
-    }
+    public Server(int port) {
+        boolean openSwitch = connect(port);
 
-    @Override
-    public void messaging(AstroMessage message) {
-        try {
-            queue.put(message);
-            astromonitor.increaseTransferMessageCount();
-        } catch (InterruptedException e) {
-            logger.error("Server.messaging : {}", e.getMessage());
-            astromonitor.failedTransferMessageCount(message.getIndex());
-            try {
-                stub.messaging(message);
-            } catch (RemoteException re) {
-                re.printStackTrace();
-            }
-            e.printStackTrace();
+        if(openSwitch){
+            threadPool();
+        } else {
+            logger.error("Server Error");
         }
-
-    }
-
-    private void threadPool() {
-        service.submit(() -> {
-            while (opener.get()) {
-                try {
-                    Object value = queue.poll(100, TimeUnit.MILLISECONDS);
-                    if (value == null) {
-                        continue;
-                    }
-
-                    boolean stored = store(value);
-                    if (stored) {
-                        astromonitor.increaseMessagecCount();
-                    } else {
-                        throw new Exception("storing is failed");
-                    }
-
-                } catch (Exception e) {
-                    logger.info("Server.threadPool.task : {}", e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     /*** Grpc 수신 ***/
 
-    private void serverOpen()  {
-        MessageImplementation messageImplementation = new MessageImplementation();
-
+    public boolean connect(int port) {
         try {
             server = ServerBuilder.forPort(8080).addService(messageImplementation).build().start();
         } catch(IOException e) {
             e.printStackTrace();
+            return false;
         }
 
         System.out.println("Server is ready");
+        return true;
+    }
 
+    private void threadPool()  {
         service.submit(()-> {
             while(opener.get()) {
                 try {
@@ -100,11 +57,11 @@ public class Server implements RMI  {
                         astromonitor.increaseMessagecCount();
                     }
 
-                    int index = ((astro.com.samples.AstroMessage) value).getIndex();
-                    long time = ((astro.com.samples.AstroMessage) value).getDatetime();
-                    String topic = ((astro.com.samples.AstroMessage) value).getTopic();
-                    String message = ((astro.com.samples.AstroMessage) value).getMessage();
-                    String uuid = ((astro.com.samples.AstroMessage) value).getUuid();
+                    int index = ((astro.com.message.AstroMessage) value).getIndex();
+                    long time = ((astro.com.message.AstroMessage) value).getDatetime();
+                    String topic = ((astro.com.message.AstroMessage) value).getTopic();
+                    String message = ((astro.com.message.AstroMessage) value).getMessage();
+                    String uuid = ((astro.com.message.AstroMessage) value).getUuid();
 
                     System.out.println(index + " " + time + " " + topic + " " + message + " " + uuid + " ");
 
@@ -141,18 +98,7 @@ public class Server implements RMI  {
      * createRegistry(port)로 수행할 것
      */
     public static void main(String[] args) {
-        Server server = new Server();
-/*        String serverName = AstroProperties.getProperty("server.name");
-
-        try {
-            server.stub = (RMI) UnicastRemoteObject.exportObject(server, 1099);
-
-            Registry registry = LocateRegistry.createRegistry(1099);
-            registry.bind(serverName, server.stub);
-            System.out.println("Server test ready");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        Server server = new Server(8080);
 
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -163,14 +109,14 @@ public class Server implements RMI  {
         //server.close();
     }
 
-    class MessageImplementation extends SampleGrpc.SampleImplBase {
-        public LinkedBlockingQueue<astro.com.samples.AstroMessage> queue = new LinkedBlockingQueue<astro.com.samples.AstroMessage>();
+    class MessageImplementation extends TransportGrpc.TransportImplBase {
+        public LinkedBlockingQueue<astro.com.message.AstroMessage> queue = new LinkedBlockingQueue<astro.com.message.AstroMessage>();
 
         @Override
-        public void sendMessage(astro.com.samples.AstroMessage message, StreamObserver<Result> responseObserver) {
+        public void sendMessage(astro.com.message.AstroMessage message, StreamObserver<Return> responseObserver) {
             if (message == null) {
                 astromonitor.failedTransferMessageCount(message.getIndex());
-                Result result = Result.newBuilder().setResultCode(1).setResultMessage("Fail").build();
+                Return result = Return.newBuilder().setReturnCode(1).build();
                 responseObserver.onNext(result);
                 responseObserver.onCompleted();
                 return;
@@ -179,7 +125,7 @@ public class Server implements RMI  {
             try {
                 queue.put(message);
                 astromonitor.increaseTransferMessageCount();
-                Result result = Result.newBuilder().setResultCode(0).setResultMessage("Success").build();
+                Return result = Return.newBuilder().setReturnCode(0).build();
                 responseObserver.onNext(result);
                 responseObserver.onCompleted();
                 return;
