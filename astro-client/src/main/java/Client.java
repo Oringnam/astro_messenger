@@ -136,6 +136,11 @@ public class Client implements MessageFormat {
 
         for(int index = 0; index < 10; ++index) {
             Long time = System.currentTimeMillis();
+            try {
+                TimeUnit.MILLISECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             String topic = "test";
             String message = "testMessage";
             String uuid = AstroCoder.getUniqueId(time, message);

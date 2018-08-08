@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,8 +24,13 @@ public class Server {
     private io.grpc.Server server;
     private MessageImplementation messageImplementation = new MessageImplementation();
 
+    private Connection dbConnection = null;
+    private PreparedStatement query = null;
+    private ResultSet resultSet = null;
+
     public Server(int port) {
         boolean openSwitch = connect(port);
+        connectDB();
 
         if(openSwitch){
             threadPool();
@@ -34,7 +41,7 @@ public class Server {
 
     /*** Grpc 수신 ***/
 
-    public boolean connect(int port) {
+    private boolean connect(int port) {
         try {
             server = ServerBuilder.forPort(8080).addService(messageImplementation).build().start();
         } catch(IOException e) {
@@ -43,6 +50,31 @@ public class Server {
         }
 
         System.out.println("Server is ready");
+        return true;
+    }
+
+    private boolean connectDB() {
+        String driver = "org.mariadb.jdbc.Driver";
+        String url = "jdbc:mariadb://localhost:3316/DB명";   //DB명 : 변경사항
+        String id = "root";
+        String password = "비밀번호";      //변경사항
+
+        //DB 연결과정
+        try {
+            Class.forName(driver);
+            dbConnection = DriverManager.getConnection(url, id, password);
+
+            if(dbConnection != null) {
+                logger.info("DBServer is connected");
+            }
+        } catch(ClassNotFoundException cnfe) {
+            logger.error("Driver load fail");
+            return false;
+        } catch(SQLException e) {
+            logger.error("DB connection fail");
+            return false;
+        }
+
         return true;
     }
 
@@ -57,13 +89,7 @@ public class Server {
                         astromonitor.increaseMessagecCount();
                     }
 
-                    int index = ((astro.com.message.AstroMessage) value).getIndex();
-                    long time = ((astro.com.message.AstroMessage) value).getDatetime();
-                    String topic = ((astro.com.message.AstroMessage) value).getTopic();
-                    String message = ((astro.com.message.AstroMessage) value).getMessage();
-                    String uuid = ((astro.com.message.AstroMessage) value).getUuid();
-
-                    System.out.println(index + " " + time + " " + topic + " " + message + " " + uuid + " ");
+                    store(value);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -78,7 +104,28 @@ public class Server {
             logger.info("Storage is full");
             return false;
         }
-        logger.info("message : {} ", value.toString());
+
+        try {
+            String uuid = ((astro.com.message.AstroMessage) value).getUuid();
+            long serverTime = ((astro.com.message.AstroMessage) value).getDatetime();
+            int index = ((astro.com.message.AstroMessage) value).getIndex();
+            String topic = ((astro.com.message.AstroMessage) value).getTopic();
+            String message = ((astro.com.message.AstroMessage) value).getMessage();
+
+            String table = "`Message Database`";
+            SimpleDateFormat dayTime = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+            String dateTime = dayTime.format(new Date(serverTime));
+
+            System.out.println(dateTime);
+
+            String sql = "insert into " + table + " values ('" + uuid + "', '" + dateTime + "', " + index + ", '" + topic + "', '" + message + "');";   //자료형 : string, datetime, int, string, string 순
+
+            query = dbConnection.prepareStatement(sql);
+            resultSet = query.executeQuery();
+            logger.info("Message stored");
+        } catch(SQLException e) {
+            logger.error("Query error");
+        }
 
         return true;
     }
