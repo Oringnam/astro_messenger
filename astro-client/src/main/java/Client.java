@@ -3,6 +3,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import astro.com.message.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -14,21 +15,22 @@ import org.slf4j.LoggerFactory;
 import utils.Basic;
 
 public class Client implements MessageFormat {
+
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ExecutorService service = Executors.newSingleThreadExecutor();
     private AtomicBoolean opener = new AtomicBoolean(true);
-    private AstroMonitor astromonitor  = new AstroMonitor();
+    private AstroMonitor astromonitor = new AstroMonitor();
 
     private ManagedChannel channel;
     private TransportGrpc.TransportBlockingStub nonBlockingStub;
     private LinkedBlockingQueue<astro.com.message.AstroMessage> messageQueue = new LinkedBlockingQueue<astro.com.message.AstroMessage>();
 
     /*** Grpc 전송 ***/
-
     public Client(String host, int port) {
         boolean connectSwitch = connect(host, port);
 
-        if(connectSwitch) {
+        if (connectSwitch) {
             threadPool();
         } else {
             logger.error("Connetion Error");
@@ -36,7 +38,7 @@ public class Client implements MessageFormat {
     }
 
     private boolean connect(String host, int port) {
-        if(host == null) {
+        if (host == null) {
             logger.error("Server not found");
             return false;
         }
@@ -44,7 +46,7 @@ public class Client implements MessageFormat {
         try {
             this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
             this.nonBlockingStub = TransportGrpc.newBlockingStub(channel);
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("Connection fail");
             e.printStackTrace();
             return false;
@@ -59,11 +61,11 @@ public class Client implements MessageFormat {
                 try {
                     Object object = messageQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (object != null) {
-                        Return result = nonBlockingStub.sendMessage((astro.com.message.AstroMessage)object);
+                        Return result = nonBlockingStub.sendMessage((astro.com.message.AstroMessage) object);
                         astromonitor.increaseTransferMessageCount();
-                        while(result.getReturnCode() == 1) {
+                        while (result.getReturnCode() == 1) {
                             astromonitor.failedTransferMessageCount(((astro.com.message.AstroMessage) object).getIndex());
-                            result = nonBlockingStub.sendMessage((astro.com.message.AstroMessage)object);
+                            result = nonBlockingStub.sendMessage((astro.com.message.AstroMessage) object);
                         }
                     }
                 } catch (Exception e) {
@@ -85,7 +87,7 @@ public class Client implements MessageFormat {
         try {
             try {
                 validator(topic);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 logger.error("Invalid topic");
                 e.printStackTrace();
                 return null;
@@ -108,7 +110,7 @@ public class Client implements MessageFormat {
 
             astromonitor.increaseMessagecCount();
             return astroMessage.build();
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("Message creation fail");
             e.printStackTrace();
             return null;
@@ -117,7 +119,7 @@ public class Client implements MessageFormat {
 
     @Override
     public boolean validator(String value) throws Exception {
-        if(value == null) {
+        if (value == null) {
             throw new Exception();
         }
 
@@ -134,7 +136,7 @@ public class Client implements MessageFormat {
 
         Client client = new Client(host, 8080);
 
-        for(int index = 0; index < 10; ++index) {
+        for (int index = 0; index < 10; ++index) {
             Long time = System.currentTimeMillis();
             try {
                 TimeUnit.MILLISECONDS.sleep(2);
@@ -145,10 +147,10 @@ public class Client implements MessageFormat {
             String message = "testMessage";
             String uuid = AstroCoder.getUniqueId(time, message);
 
-            astro.com.message.AstroMessage astroMessage = client.makeMessage(index, time, topic, message,uuid);
+            astro.com.message.AstroMessage astroMessage = client.makeMessage(index, time, topic, message, uuid);
             try {
                 client.sendMessage(astroMessage);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
