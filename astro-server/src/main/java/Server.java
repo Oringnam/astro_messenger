@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import message.AstroMessage;
@@ -32,7 +33,7 @@ public class Server {
         boolean openSwitch = connect(port);
         connectDB();
 
-        if(openSwitch){
+        if (openSwitch) {
             threadPool();
         } else {
             logger.error("Server Error");
@@ -44,7 +45,7 @@ public class Server {
     private boolean connect(int port) {
         try {
             server = ServerBuilder.forPort(8080).addService(messageImplementation).build().start();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -55,35 +56,35 @@ public class Server {
 
     private boolean connectDB() {
         String driver = "org.mariadb.jdbc.Driver";
-        String url = "jdbc:mariadb://localhost:3316/DB명";   //DB명 : 변경사항
+        String url = "jdbc:mariadb://localhost:3306/sample";   //DB명 : 변경사항
         String id = "root";
-        String password = "비밀번호";      //변경사항
+        String password = "";      //변경사항
 
         //DB 연결과정
         try {
             Class.forName(driver);
             dbConnection = DriverManager.getConnection(url, id, password);
 
-            if(dbConnection != null) {
+            if (dbConnection != null) {
                 logger.info("DBServer is connected");
             }
-        } catch(ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
             logger.error("Driver load fail");
             return false;
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             logger.error("DB connection fail");
             return false;
         }
-
         return true;
     }
 
-    private void threadPool()  {
-        service.submit(()-> {
-            while(opener.get()) {
+    private void threadPool() {
+        service.submit(() -> {
+            while (opener.get()) {
                 try {
                     Object value = messageImplementation.queue.poll(100, TimeUnit.MILLISECONDS);
-                    if(value == null) {
+                    if (value == null) {
                         continue;
                     } else {
                         astromonitor.increaseMessagecCount();
@@ -100,7 +101,7 @@ public class Server {
 
     // 저장 방식 정해지면, 구현해야함. db를 쓸것인지, 파일로 저장할 것인지
     private boolean store(Object value) {
-        if(isFull()) {
+        if (isFull()) {
             logger.info("Storage is full");
             return false;
         }
@@ -123,7 +124,7 @@ public class Server {
             query = dbConnection.prepareStatement(sql);
             resultSet = query.executeQuery();
             logger.info("Message stored");
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             logger.error("Query error");
         }
 
