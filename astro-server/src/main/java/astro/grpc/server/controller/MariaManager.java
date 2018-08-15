@@ -1,12 +1,45 @@
+package astro.grpc.server.controller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
-public class StoringManager {
+public class MariaManager {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    public Connection dbConnector = null;
+
+
+
     private PreparedStatement sql = null;
     private ResultSet resultSet = null;
+
+
+    public boolean connect() {
+        String driver = "org.mariadb.jdbc.Driver";
+        String url = "jdbc:mariadb://localhost:3316/sample";   //DB명 : 변경사항
+        String id = "root";
+        String password = "";      //변경사항
+
+        //DB 연결과정
+        try {
+            Class.forName(driver);
+            dbConnector = DriverManager.getConnection(url, id, password);
+
+            if (dbConnector != null) {
+                logger.info("DBServer is connected");
+            }
+        } catch (ClassNotFoundException e) {
+            logger.error("Driver load fail");
+            return false;
+        } catch (SQLException e) {
+            logger.error("DB connection fail");
+            return false;
+        }
+
+        return true;
+    }
 
     public boolean store(Connection dbConnector, Object value) {
         if(isFull()) {
@@ -45,5 +78,4 @@ public class StoringManager {
         //저장 실패시 return true
         return false;
     }
-
 }

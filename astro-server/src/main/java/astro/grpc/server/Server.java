@@ -1,9 +1,13 @@
-import java.sql.*;
+package astro.grpc.server;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import astro.grpc.server.controller.MariaManager;
+import astro.grpc.server.controller.ServerManager;
 import message.AstroMessage;
 import monitor.AstroMonitor;
 import org.slf4j.Logger;
@@ -17,25 +21,25 @@ public class Server {
     public static AstroMonitor astromonitor = new AstroMonitor();
 
     private MessageImplementation messageImplementation = new MessageImplementation();
-    private ConnectionManager connectionManager = new ConnectionManager();
-    private StoringManager storingManager = new StoringManager();
+    private ServerManager serverManager = new ServerManager();
+    private MariaManager mariaManager = new MariaManager();
+
 
     public Server() {
+        init();
         threadPool();
     }
 
-    private boolean connect(int port) {
-        boolean connectionSwitch = connectionManager.clientCoennect(messageImplementation, 8080);
+    private boolean init() {
+        boolean connectionSwitch = serverManager.launching();
         if(!connectionSwitch){
-            logger.error("Server Connection Error");
-
+            logger.error("astro.grpc.server.Server Connection Error");
             return false;
         }
 
-        connectionSwitch = connectionManager.databaseConnect();
+        connectionSwitch = mariaManager.connect();
         if(!connectionSwitch){
             logger.error("Database Connection Error");
-
             return false;
         }
 
@@ -52,7 +56,7 @@ public class Server {
                     } else {
                         astromonitor.increaseMessagecCount();
                     }
-                    storingManager.store(connectionManager.dbConnector, value);
+                    mariaManager.store(mariaManager.dbConnector, value);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -69,7 +73,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.connect(8080);
 
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -79,5 +82,4 @@ public class Server {
 
         //server.close();
     }
-
 }

@@ -1,3 +1,5 @@
+package astro.grpc.server;
+
 import astro.com.message.AstroMessage;
 import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
@@ -9,7 +11,7 @@ public class MessageImplementation extends TransportGrpc.TransportImplBase {
     public LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<astro.com.message.AstroMessage>();
 
     @Override
-    public void sendMessage(astro.com.message.AstroMessage message, StreamObserver<Return> responseObserver) {
+    public void sendMessage(AstroMessage message, StreamObserver<Return> responseObserver) {
         if (message == null) {
             Server.astromonitor.failedTransferMessageCount(message.getIndex());
             Return result = Return.newBuilder().setReturnCode(1).build();
