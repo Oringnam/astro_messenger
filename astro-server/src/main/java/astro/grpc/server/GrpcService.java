@@ -6,10 +6,10 @@ import astro.com.message.TransportGrpc;
 import astro.grpc.server.basic.ServerQueue;
 import io.grpc.stub.StreamObserver;
 
-public class MessageImplementation extends TransportGrpc.TransportImplBase {
+public class GrpcService extends TransportGrpc.TransportImplBase {
     private ServerQueue queue;
 
-    public MessageImplementation(ServerQueue queue) {
+    public GrpcService(ServerQueue queue) {
         this.queue = queue;
     }
 
