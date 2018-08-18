@@ -10,15 +10,13 @@ public class MariaManager {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     public Connection dbConnector = null;
 
-
-
     private PreparedStatement sql = null;
     private ResultSet resultSet = null;
 
 
     public boolean connect() {
         String driver = "org.mariadb.jdbc.Driver";
-        String url = "jdbc:mariadb://localhost:3306/sample";   //DB명 : 변경사항
+        String url = "jdbc:mariadb://localhost:3316/myfirstdb";   //DB명 : 변경사항
         String id = "root";
         String password = "";      //변경사항
 
@@ -41,7 +39,7 @@ public class MariaManager {
         return true;
     }
 
-    public boolean store(Connection dbConnector, Object value) {
+    public boolean store(Object value) {
         if(isFull()) {
             logger.info("Storage is full");
             return false;

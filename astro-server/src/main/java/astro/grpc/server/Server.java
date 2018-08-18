@@ -1,5 +1,6 @@
 package astro.grpc.server;
 
+import astro.grpc.server.basic.AstroJobs;
 import astro.grpc.server.basic.ServerQueue;
 import astro.grpc.server.controller.MariaManager;
 import astro.grpc.server.controller.ServerManager;
@@ -22,6 +23,7 @@ public class Server {
     private int queueSize = 500000;
 
     private WorkerManager workerManager;
+    private AstroJobs astroJobs;
 
     private int workers = 10;
 
@@ -64,11 +66,14 @@ public class Server {
     }
 
     private void runnalbe() {
-        workerManager = new WorkerManager.WorkerManagerBuilder()
+        astroJobs = new AstroJobs.AstroJobsBuilder()
                 .setMariaManager(mariaManager)
-                .setAstroMonitor(astromonitor)
                 .setServerQueue(queue)
+                .build();
+
+        workerManager = new WorkerManager.WorkerManagerBuilder()
                 .setWorkers(workers)
+                .setAstroJobs(astroJobs)
                 .build();
 
         workerManager.workerPool();
