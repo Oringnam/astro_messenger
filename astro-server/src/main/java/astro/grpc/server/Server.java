@@ -17,7 +17,7 @@ public class Server {
     private MariaManager mariaManager = new MariaManager();
 
     private ServerQueue queue;
-    private MessageImplementation messageImplementation;
+    private GrpcService grpcService;
 
     private int queueSize = 500000;
 
@@ -45,9 +45,9 @@ public class Server {
 
     private boolean init() {
         queue = new ServerQueue.ServerQueueBuilder().setMaxSize(queueSize).build();
-        messageImplementation = new MessageImplementation(queue);
+        grpcService = new GrpcService(queue);
 
-        boolean connectionSwitch = serverManager.launching(messageImplementation);
+        boolean connectionSwitch = serverManager.launching(grpcService);
         if (!connectionSwitch) {
             logger.error("astro.grpc.server.Server Connection Error");
             return false;
