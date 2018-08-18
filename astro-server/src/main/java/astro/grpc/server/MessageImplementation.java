@@ -3,12 +3,17 @@ package astro.grpc.server;
 import astro.com.message.AstroMessage;
 import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
+import astro.grpc.server.basic.ServerQueue;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageImplementation extends TransportGrpc.TransportImplBase {
-    public LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<astro.com.message.AstroMessage>();
+    private ServerQueue queue;
+
+    public MessageImplementation(ServerQueue queue) {
+        this.queue = queue;
+    }
 
     @Override
     public void sendMessage(AstroMessage message, StreamObserver<Return> responseObserver) {
@@ -22,7 +27,9 @@ public class MessageImplementation extends TransportGrpc.TransportImplBase {
 
         try {
             queue.put(message);
+
             Server.astromonitor.increaseTransferMessageCount();
+
             Return result = Return.newBuilder().setReturnCode(0).build();
             responseObserver.onNext(result);
             responseObserver.onCompleted();
