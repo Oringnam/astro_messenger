@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ServerQueue {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,6 +40,18 @@ public class ServerQueue {
         }
 
         return true;
+    }
+
+    public synchronized AstroMessage poll(long timeout) {
+        Object value = null;
+
+        try {
+            value = queue.poll(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return (AstroMessage) value;
     }
 
 

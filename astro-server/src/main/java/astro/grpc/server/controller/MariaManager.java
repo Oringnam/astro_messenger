@@ -18,7 +18,7 @@ public class MariaManager {
 
     public boolean connect() {
         String driver = "org.mariadb.jdbc.Driver";
-        String url = "jdbc:mariadb://localhost:3316/sample";   //DB명 : 변경사항
+        String url = "jdbc:mariadb://localhost:3306/sample";   //DB명 : 변경사항
         String id = "root";
         String password = "";      //변경사항
 

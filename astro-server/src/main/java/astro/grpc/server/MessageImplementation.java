@@ -6,8 +6,6 @@ import astro.com.message.TransportGrpc;
 import astro.grpc.server.basic.ServerQueue;
 import io.grpc.stub.StreamObserver;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 public class MessageImplementation extends TransportGrpc.TransportImplBase {
     private ServerQueue queue;
 

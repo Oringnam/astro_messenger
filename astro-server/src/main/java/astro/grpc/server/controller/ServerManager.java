@@ -11,11 +11,9 @@ public class ServerManager {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private io.grpc.Server server = null;
 
-    private MessageImplementation messageImplementation = new MessageImplementation();
-
     private int port = 8080;
 
-    public boolean launching() {
+    public boolean launching(MessageImplementation messageImplementation) {
         try {
             server = ServerBuilder.forPort(port).addService(messageImplementation).build().start();
         } catch (IOException e) {
