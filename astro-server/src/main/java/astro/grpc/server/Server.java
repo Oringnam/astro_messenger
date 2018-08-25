@@ -18,7 +18,7 @@ public class Server {
     private ServerManager serverManager = new ServerManager();
     private MariaManager mariaManager = new MariaManager();
 
-    private static AppConfig config;
+    public static AppConfig config;
 
 
     private ServerQueue queue;
@@ -56,6 +56,10 @@ public class Server {
     private boolean init() {
         queue = new ServerQueue.ServerQueueBuilder().setMaxSize(queueSize).build();
         grpcService = new GrpcService(queue);
+
+        serverManager.init();
+        mariaManager.init();
+
 
         boolean connectionSwitch = serverManager.launching(grpcService);
         if (!connectionSwitch) {

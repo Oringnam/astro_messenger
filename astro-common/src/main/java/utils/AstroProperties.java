@@ -33,7 +33,13 @@ public class AstroProperties {
         inputStream.close();
     }
 
-    public String get(String filepath, String key) {
-        return (String) properties.get(key);
+    public String get(String key) throws NullPointerException {
+        String retVal = (String) properties.get(key);
+
+        if (retVal == null) {
+            throw new NullPointerException("getting key is null, key : " + key);
+        }
+
+        return retVal;
     }
 }

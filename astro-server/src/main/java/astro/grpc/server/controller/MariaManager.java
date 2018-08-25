@@ -1,5 +1,6 @@
 package astro.grpc.server.controller;
 
+import astro.grpc.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,19 +8,39 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 
 public class MariaManager {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
     public Connection dbConnector = null;
-
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private PreparedStatement sql = null;
     private ResultSet resultSet = null;
 
+    private String driver = "org.mariadb.jdbc.Driver";
+    private String ip = "localhost";
+    private String port = "3306";
+
+    private String database = "myfirstdb";
+
+    private String id = "root";
+    private String password = "";
+
+    private String url = "jdbc:mariadb://localhost:3306/sample";
+
+    public void init() {
+        try {
+            driver = Server.config.get("maria.driver");
+            id = Server.config.get("maria.id");
+            password = Server.config.get("maria.pw");
+            ip = Server.config.get("maria.ip");
+            port = Server.config.get("maria.port");
+            database = Server.config.get("maria.database");
+
+            url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
+        } catch (NullPointerException e) {
+            logger.warn("config getter is failed : {}", e.getMessage());
+        }
+    }
+
 
     public boolean connect() {
-        String driver = "org.mariadb.jdbc.Driver";
-        String url = "jdbc:mariadb://localhost:3316/myfirstdb";   //DB명 : 변경사항
-        String id = "root";
-        String password = "";      //변경사항
-
         //DB 연결과정
         try {
             Class.forName(driver);
@@ -40,7 +61,7 @@ public class MariaManager {
     }
 
     public boolean store(Object value) {
-        if(isFull()) {
+        if (isFull()) {
             logger.info("Storage is full");
             return false;
         }
@@ -58,14 +79,15 @@ public class MariaManager {
 
             System.out.println(dateTime);
 
-            String query = "insert into " + table + " values ('" + uuid + "', '" + dateTime + "', " + index + ", '" + topic + "', '" + message + "');";   //자료형 : string, datetime, int, string, string 순
+            String query = "insert into " + table + " values ('" + uuid + "', '" + dateTime + "', " + index + ", '" +
+                    topic + "', '" + message + "');";   //자료형 : string, datetime, int, string, string 순
 
             sql = dbConnector.prepareStatement(query);
             resultSet = sql.executeQuery();
             logger.info("Message stored");
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             logger.error("Query error");
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("Storing error");
         }
 

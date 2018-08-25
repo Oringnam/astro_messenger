@@ -9,7 +9,7 @@ public class AppConfig extends AstroProperties {
     }
 
     @Override
-    public String get(String filepath, String key) {
-        return super.get(filepath, key);
+    public String get(String key) throws NullPointerException {
+        return super.get(key);
     }
 }
