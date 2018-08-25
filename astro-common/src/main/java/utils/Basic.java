@@ -9,7 +9,7 @@ public class Basic {
     private static Logger logger = LoggerFactory.getLogger(Basic.class);
 
 /*    public static String getHostIp() {
-//        return AstroProperties.getProperty("server.host");
+//        return AstroProperties.get("server.host");
     }*/
 
     public static String getLocalIP() {

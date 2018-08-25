@@ -2,10 +2,14 @@ package astro.grpc.server.config;
 
 import utils.AstroProperties;
 
-public class AppConfig {
-    private static String filepath = "server.properties";
+public class AppConfig extends AstroProperties {
 
-    public static String get(String key) {
-        return AstroProperties.getProperty(filepath, key);
+    public AppConfig(String filePath) {
+        super(filePath);
+    }
+
+    @Override
+    public String get(String filepath, String key) {
+        return super.get(filepath, key);
     }
 }
