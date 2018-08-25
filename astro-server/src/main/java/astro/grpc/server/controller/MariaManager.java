@@ -37,8 +37,22 @@ public class MariaManager {
         } catch (NullPointerException e) {
             logger.warn("config getter is failed : {}", e.getMessage());
         }
+
+        initDisplay();
     }
 
+    private void initDisplay() {
+        logger.info("maria db init --------");
+        logger.info("dirver : {} ", driver);
+        logger.info("ip : {} ", ip);
+        logger.info("port : {} ", port);
+        logger.info("database : {} ", database);
+        logger.info("id : {} ", id);
+        logger.info("password : {} ", password);
+//        logger.info("table : {} ", id);
+
+        logger.info("------------------\n");
+    }
 
     public boolean connect() {
         //DB 연결과정

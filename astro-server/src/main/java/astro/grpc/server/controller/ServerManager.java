@@ -21,6 +21,15 @@ public class ServerManager {
         } catch (NullPointerException e) {
             logger.warn("config getter is failed : {}", e.getMessage());
         }
+
+        initDisplay();
+    }
+
+    private void initDisplay() {
+        logger.info("servermanager init --------");
+        logger.info("port : {} ", port);
+
+        logger.info("------------------\n");
     }
 
     public boolean launching(GrpcService grpcService) {
