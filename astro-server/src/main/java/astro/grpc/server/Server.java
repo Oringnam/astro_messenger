@@ -2,6 +2,7 @@ package astro.grpc.server;
 
 import astro.grpc.server.basic.AstroJobs;
 import astro.grpc.server.basic.ServerQueue;
+import astro.grpc.server.config.AppConfig;
 import astro.grpc.server.controller.MariaManager;
 import astro.grpc.server.controller.ServerManager;
 import astro.grpc.server.controller.WorkerManager;
@@ -17,6 +18,9 @@ public class Server {
     private ServerManager serverManager = new ServerManager();
     private MariaManager mariaManager = new MariaManager();
 
+    private static AppConfig config;
+
+
     private ServerQueue queue;
     private GrpcService grpcService;
 
@@ -27,7 +31,11 @@ public class Server {
 
     private int workers = 10;
 
+
+
     public Server() {
+        config = new AppConfig("server.properties");
+
         init();
         runnalbe();
     }

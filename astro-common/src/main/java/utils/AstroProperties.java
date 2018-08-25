@@ -21,6 +21,7 @@ public class AstroProperties {
             loadProperties();
         } catch (IOException e) {
             logger.warn("loading properties file ({}) is failed : {} ", filePath, e.getMessage());
+            logger.info("using default value for properties");
         }
     }
 
