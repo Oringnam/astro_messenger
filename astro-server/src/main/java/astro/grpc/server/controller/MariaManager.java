@@ -68,45 +68,111 @@ public class MariaManager {
             return false;
         } catch (SQLException e) {
             logger.error("DB connection fail");
+            logger.info("Database doesn't exist. Create database...");
+
+            if(createDatabase(database)) {
+                logger.info("Database created");
+            }
             return false;
         }
 
         return true;
     }
 
-    public boolean store(Object value) {
+    private boolean createDatabase(String dataBase) {
+        try {
+            String query = "Create database" + dataBase;
+
+            sql = dbConnector.prepareStatement(query);
+            resultSet = sql.executeQuery();
+        } catch(SQLException e) {
+            logger.error("Database creation error");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean store(astro.com.message.AstroMessage value) {
         if (isFull()) {
             logger.info("Storage is full");
             return false;
         }
 
         try {
-            String uuid = ((astro.com.message.AstroMessage) value).getUuid();
-            long serverTime = ((astro.com.message.AstroMessage) value).getDatetime();
-            int index = ((astro.com.message.AstroMessage) value).getIndex();
-            String topic = ((astro.com.message.AstroMessage) value).getTopic();
-            String message = ((astro.com.message.AstroMessage) value).getMessage();
-
             String table = "`Message Database`";
-            SimpleDateFormat dayTime = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
-            String dateTime = dayTime.format(new Date(serverTime));
 
-            System.out.println(dateTime);
-
-            String query = "insert into " + table + " values ('" + uuid + "', '" + dateTime + "', " + index + ", '" +
-                    topic + "', '" + message + "');";   //자료형 : string, datetime, int, string, string 순
-
-            sql = dbConnector.prepareStatement(query);
+            sql = setInsertQuery(table, value);
             resultSet = sql.executeQuery();
-            logger.info("Message stored");
-        } catch (SQLException e) {
-            logger.error("Query error");
+            storeDisplay(dateTransform(value.getDatetime()));
         } catch (Exception e) {
             logger.error("Storing error");
         }
 
         return true;
     }
+
+    public PreparedStatement setInsertQuery(String table, astro.com.message.AstroMessage value) {
+        String query = null;
+        String dateTime = dateTransform(value.getDatetime());
+
+        query = "insert into " + table + " values (?, ?, ?, ?, ?)";
+
+        try {
+            sql = dbConnector.prepareStatement(query);
+            sql.setString(1, value.getUuid());
+            sql.setString(2, dateTime);
+            sql.setInt(3, value.getIndex());
+            sql.setString(4, value.getTopic());
+            sql.setString(5, value.getMessage());
+        } catch (SQLException e) {
+            logger.error("SQL error");
+
+            logger.info("Table is not on DB. Create Table...");
+
+            if(createTable(database)) {
+                logger.info("Table created");
+            }
+
+            return null;
+        }
+
+        return sql;
+    }
+
+    private boolean createTable(String table) {
+        try {
+            String query = "create table" + table
+                    + "(uuid char(50) not null,"
+                    + "datetime datetime,"
+                    + "index int(11),"
+                    + "topic char(50),"
+                    + "message char(50),"
+                    + "primary key (uuid));";
+
+            sql = dbConnector.prepareStatement(query);
+            resultSet = sql.executeQuery();
+        } catch(SQLException e) {
+            logger.error("Table creation error");
+            return false;
+        }
+        return true;
+    }
+
+    private String dateTransform(long time) {
+        long serverTime = time;
+
+        SimpleDateFormat dayTime = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
+        String dateTime = dayTime.format(new Date(serverTime));
+
+        return dateTime;
+    }
+
+    private void storeDisplay(String dateTime) {
+        logger.info("Message stored : {}...", dateTime);
+    }
+
 
     private boolean isFull() {
         //저장 실패시 return true

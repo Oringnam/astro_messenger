@@ -16,8 +16,8 @@ public class ServerManager {
 
     public void init() {
         try {
-            String tmp = Server.config.get("server.port");
-            port = Integer.parseInt(tmp);
+            String portValue = Server.config.get("server.port");
+            port = Integer.parseInt(portValue);
         } catch (NullPointerException e) {
             logger.warn("config getter is failed : {}", e.getMessage());
         }
