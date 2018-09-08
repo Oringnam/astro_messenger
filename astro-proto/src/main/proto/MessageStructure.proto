@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "astro.com.message";
+option java_outer_classname = "MessageProto";
+option objc_class_prefix = "RTG";
+
+service Transport {
+    rpc sendMessage(AstroMessage) returns (Return) {}
+}
+
+message AstroMessage {
+    string topic = 1;
+    int32 index = 2;
+    int64 datetime = 3;
+    string uuid = 4;
+    string message = 5;
+}
+
+message Return {
+    int32 returnCode = 1;
+}
