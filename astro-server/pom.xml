@@ -11,6 +11,10 @@
 
     <artifactId>astro-server</artifactId>
 
+    <properties>
+        <apache.log4j>2.8.2</apache.log4j>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>astro</groupId>
@@ -34,6 +38,24 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>2.2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${apache.log4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${apache.log4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${apache.log4j}</version>
         </dependency>
     </dependencies>
 </project>

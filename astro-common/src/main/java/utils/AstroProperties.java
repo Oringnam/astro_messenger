@@ -1,19 +1,45 @@
 package utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class AstroProperties {
-    public static String getProperty(String key) {
-        Properties properties = new Properties();
-        InputStream inputStream = AstroProperties.class.getClassLoader().getResourceAsStream("astro.properties");
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private Properties properties;
+
+    private String filePath = "default.properties";
+
+    public AstroProperties(String filePath) {
+        this.filePath = filePath;
+
         try {
-            properties.load(inputStream);
-            inputStream.close();
+            loadProperties();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("loading properties file ({}) is failed : {} ", filePath, e.getMessage());
+            logger.info("using default value for properties");
         }
-        return (String) properties.get(key);
+    }
+
+    private void loadProperties() throws IOException {
+        properties = new Properties();
+        InputStream inputStream = AstroProperties.class.getClassLoader().getResourceAsStream(filePath);
+
+        properties.load(inputStream);
+        inputStream.close();
+    }
+
+    public String get(String key) throws NullPointerException {
+        String retVal = (String) properties.get(key);
+
+        if (retVal == null) {
+            throw new NullPointerException("getting key is null, key : " + key);
+        }
+
+        return retVal;
     }
 }
