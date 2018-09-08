@@ -127,16 +127,16 @@ public class Client implements MessageFormat {
             try {
                 validator(topic);
             } catch (Exception e) {
-                logger.error("Invalid topic");
-                e.printStackTrace();
+                logger.error("Invalid topic", e);
+//                e.printStackTrace();
                 return null;
             }
 
             try {
                 validator(message);
             } catch (Exception e) {
-                logger.error("Invalid astro.grpc.clientsdk.message");
-                e.printStackTrace();
+                logger.error("Invalid astro.grpc.clientsdk.message", e);
+//                e.printStackTrace();
                 return null;
             }
 
