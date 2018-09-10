@@ -1,4 +1,27 @@
 package astro.grpc.clientsdk.message;
 
+import astro.com.message.AstroMessage;
+import message.AstroCoder;
+
 public class MessageBuilder {
+    int index;
+
+    public MessageBuilder() {
+        index = 0;
+    }
+
+    public AstroMessage makeMessage(String topic, String message) {
+        Long time = System.currentTimeMillis();
+        String uuid = AstroCoder.getUniqueId(time, message);
+
+        astro.com.message.AstroMessage.Builder astroMessage = astro.com.message.AstroMessage.newBuilder();
+        astroMessage.setIndex(index)
+                    .setDatetime(time)
+                    .setTopic(topic)
+                    .setMessage(message)
+                    .setUuid(uuid);
+        index++;
+
+        return astroMessage.build();
+    }
 }
