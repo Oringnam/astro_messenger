@@ -47,6 +47,7 @@ public class MariaManager {
         logger.info("ip : {} ", ip);
         logger.info("port : {} ", port);
         logger.info("database : {} ", database);
+        logger.info("url : {}", url);
         logger.info("id : {} ", id);
         logger.info("password : {} ", password);
 //        logger.info("table : {} ", id);
@@ -70,8 +71,16 @@ public class MariaManager {
             logger.error("DB connection fail");
             logger.info("Database doesn't exist. Create database...");
 
-            if(createDatabase(database)) {
-                logger.info("Database created");
+            boolean connectSwitch = createDatabase(database);
+
+            if(connectSwitch) {
+                logger.info("Database created : {}", database);
+                try {
+                    url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
+                    dbConnector = DriverManager.getConnection(url, id, password);
+                } catch(SQLException se) {
+                    logger.error("Connection error");
+                }
             }
             return false;
         }
@@ -81,8 +90,10 @@ public class MariaManager {
 
     private boolean createDatabase(String dataBase) {
         try {
-            String query = "Create database" + dataBase;
+            url = "jdbc:mariadb://" + ip + ":" + port;
+            dbConnector = DriverManager.getConnection(url, id, password);
 
+            String query = "CREATE DATABASE " + "`" + dataBase + "`";
             sql = dbConnector.prepareStatement(query);
             resultSet = sql.executeQuery();
         } catch(SQLException e) {
@@ -100,14 +111,20 @@ public class MariaManager {
             return false;
         }
 
-        try {
-            String table = "`Message Database`";
+        String table = database;
 
+        try {
             sql = setInsertQuery(table, value);
             resultSet = sql.executeQuery();
             storeDisplay(dateTransform(value.getDatetime()));
         } catch (Exception e) {
             logger.error("Storing error");
+            logger.info("Table is not on DB. Create Table...");
+
+            boolean createSwitch = createTable(table);
+            if(createSwitch) {
+                logger.info("Table created");
+            }
         }
 
         return true;
@@ -117,7 +134,7 @@ public class MariaManager {
         String query = null;
         String dateTime = dateTransform(value.getDatetime());
 
-        query = "insert into " + table + " values (?, ?, ?, ?, ?)";
+        query = "insert into " + "`" + table + "`" + " values (?, ?, ?, ?, ?)";
 
         try {
             sql = dbConnector.prepareStatement(query);
@@ -129,12 +146,6 @@ public class MariaManager {
         } catch (SQLException e) {
             logger.error("SQL error");
 
-            logger.info("Table is not on DB. Create Table...");
-
-            if(createTable(database)) {
-                logger.info("Table created");
-            }
-
             return null;
         }
 
@@ -143,13 +154,13 @@ public class MariaManager {
 
     private boolean createTable(String table) {
         try {
-            String query = "create table" + table
-                    + "(uuid char(50) not null,"
-                    + "datetime datetime,"
-                    + "index int(11),"
-                    + "topic char(50),"
-                    + "message char(50),"
-                    + "primary key (uuid));";
+            String query = "create table" + "`" + table + "`"
+                    + "(`uuid` char(50) not null,"
+                    + "`datetime` datetime,"
+                    + "`index` int(11),"
+                    + "`topic` char(50),"
+                    + "`message` char(50),"
+                    + "primary key (`uuid`));";
 
             sql = dbConnector.prepareStatement(query);
             resultSet = sql.executeQuery();

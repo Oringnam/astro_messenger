@@ -27,7 +27,7 @@ public class MessageQueue {
         return true;
     }
 
-    public boolean put(AstroMessage message) {
+    public synchronized boolean put(AstroMessage message) {
         if(isFull()) {
             logger.error("MessageQueue is full");
             return false;
@@ -42,7 +42,7 @@ public class MessageQueue {
         return true;
     }
 
-    public AstroMessage poll(long timeout, TimeUnit unit) {
+    public synchronized AstroMessage poll(long timeout, TimeUnit unit) {
         AstroMessage returnMessage = null;
         try {
             returnMessage = messageQueue.poll(timeout, TimeUnit.MILLISECONDS);
