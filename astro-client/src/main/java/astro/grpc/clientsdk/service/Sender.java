@@ -26,22 +26,20 @@ public class Sender {
 
     public void threadPool() {
         service.submit(()-> {
-            while(opener.get()) {
-                try {
-                    AstroMessage value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (value != null) {
-                        Return result = astroConnector.getBlockingStub().sendMessage(value);
+           while(opener.get()) {
+               try {
+                   AstroMessage value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
+                   if (value != null) {
+                       Return result = astroConnector.getBlockingStub().sendMessage(value);
 
-                        logger.info("Message transfered");
-
-                        while (result.getReturnCode() == 1) {
-                            result = astroConnector.getBlockingStub().sendMessage(value);
-                        }
-                    }
-                } catch (Exception e) {
+                       while (result.getReturnCode() == 1) {
+                           result = astroConnector.getBlockingStub().sendMessage(value);
+                       }
+                   }
+               } catch (Exception e) {
                    e.printStackTrace();
-                }
-            }
+               }
+           }
         });
 
     }
