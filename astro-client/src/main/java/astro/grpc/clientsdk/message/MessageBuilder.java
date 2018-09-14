@@ -14,14 +14,14 @@ public class MessageBuilder {
         Long time = System.currentTimeMillis();
         String uuid = AstroCoder.getUniqueId(time, message);
 
-        astro.com.message.AstroMessage.Builder astroMessage = astro.com.message.AstroMessage.newBuilder();
-        astroMessage.setIndex(index)
-                    .setDatetime(time)
-                    .setTopic(topic)
-                    .setMessage(message)
-                    .setUuid(uuid);
+        AstroMessage.Builder messageBuilder = AstroMessage.newBuilder()
+                                                          .setIndex(index)
+                                                          .setDatetime(time)
+                                                          .setTopic(topic)
+                                                          .setMessage(message)
+                                                          .setUuid(uuid);
         index++;
 
-        return astroMessage.build();
+        return messageBuilder.build();
     }
 }
