@@ -45,9 +45,9 @@ public class MessageQueue {
     public synchronized AstroMessage poll(long timeout, TimeUnit unit) {
         AstroMessage returnMessage = null;
         try {
-            returnMessage = messageQueue.poll(timeout, TimeUnit.MILLISECONDS);
+            returnMessage = messageQueue.poll(timeout, unit);
         } catch(Exception e) {
-            logger.error("Failed to poll data in queue");
+            logger.error("Failed to poll data in queue : {}", e.getMessage());
         }
 
         return returnMessage;
