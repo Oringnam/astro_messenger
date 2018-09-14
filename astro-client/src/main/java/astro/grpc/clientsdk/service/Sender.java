@@ -21,7 +21,7 @@ public class Sender {
 
     public Sender(AstroConnector astroConnector) {
         this.astroConnector = astroConnector;
-        threadPool();
+        if(astroConnector.getBlockingStub() != null) threadPool();
     }
 
     public void threadPool() {
@@ -31,7 +31,6 @@ public class Sender {
                     AstroMessage value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (value != null) {
                         Return result = astroConnector.getBlockingStub().sendMessage(value);
-
                         logger.info("Message transfered");
 
                         while (result.getReturnCode() == 1) {
@@ -39,7 +38,7 @@ public class Sender {
                         }
                     }
                 } catch (Exception e) {
-                   e.printStackTrace();
+                    logger.error("Message transter error");
                 }
             }
         });

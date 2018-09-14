@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class AstroConnector {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private ManagedChannel channel;
-    private TransportGrpc.TransportBlockingStub blockingStub;
+    private ManagedChannel channel = null;
+    private TransportGrpc.TransportBlockingStub blockingStub = null;
 
     private int port = 8080;
     private String host = "localhost";
@@ -19,7 +19,7 @@ public class AstroConnector {
         host = ClientSdk.config.get("server.host");
         String portKey = ClientSdk.config.get("server.port");
         port = Integer.parseInt(portKey);
-
+        connect();
         initDisplay();
     }
 
@@ -40,7 +40,6 @@ public class AstroConnector {
             this.blockingStub = TransportGrpc.newBlockingStub(channel);
         } catch (Exception e) {
             logger.error("Connection fail. Cannot find server port");
-            e.printStackTrace();
         }
     }
 

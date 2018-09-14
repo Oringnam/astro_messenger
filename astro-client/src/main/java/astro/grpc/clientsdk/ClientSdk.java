@@ -26,7 +26,6 @@ public class ClientSdk {
 
     public void init() {
         astroConnector.init();
-        astroConnector.connect();
         sender = new Sender(astroConnector);
     }
 
