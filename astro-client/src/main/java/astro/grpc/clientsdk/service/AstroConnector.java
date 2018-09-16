@@ -12,18 +12,15 @@ public class AstroConnector {
     private ManagedChannel channel = null;
     private TransportGrpc.TransportBlockingStub blockingStub = null;
 
-    private int port = 8080;
-    private String host = "localhost";
+    private int port;
+    private String host;
 
-    public void init() {
-        host = ClientSdk.config.get("server.host");
-        String portKey = ClientSdk.config.get("server.port");
-        port = Integer.parseInt(portKey);
-        connect();
-        initDisplay();
+    public AstroConnector(ClientSdk.AstroConnectorBuilder builder) {
+        this.port = builder.getPort();
+        this.host = builder.getHost();
     }
 
-    private void initDisplay() {
+    public void initDisplay() {
         logger.info("Client Connector Initialization-----------------");
         logger.info("Host : {}", host);
         logger.info("port {}", port);
@@ -46,4 +43,6 @@ public class AstroConnector {
     public TransportGrpc.TransportBlockingStub getBlockingStub() {
         return blockingStub;
     }
+
+
 }
