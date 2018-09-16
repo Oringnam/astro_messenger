@@ -15,12 +15,14 @@ public class AstroConnector {
     private int port;
     private String host;
 
-    public AstroConnector(ClientSdk.AstroConnectorBuilder builder) {
-        this.port = builder.getPort();
-        this.host = builder.getHost();
+    public void init(int port, String host) {
+        this.port = port;
+        this.host = host;
+
+        initDisplay();
     }
 
-    public void initDisplay() {
+    private void initDisplay() {
         logger.info("Client Connector Initialization-----------------");
         logger.info("Host : {}", host);
         logger.info("port {}", port);

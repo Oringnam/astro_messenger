@@ -12,20 +12,24 @@ import java.util.concurrent.TimeUnit;
 public class ClientSdk {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private MessageBuilder messageBuilder;
-    private AstroConnectorBuilder astroConnectorBuilder;
     private AstroConnector astroConnector;
     private Sender sender;
 
-    private ClientSdk() {
+    private int port;
+    private String host;
+
+    private ClientSdk(ClientSdkBuilder builder) {
+        port = builder.port;
+        host = builder.host;
         messageBuilder = new MessageBuilder();
-        astroConnectorBuilder = new AstroConnectorBuilder();
+        astroConnector = new AstroConnector();
     }
 
     public static void main(String args[]) {
-        ClientSdk clientSdk = new ClientSdk();
-        clientSdk.astroConnector = clientSdk.astroConnectorBuilder.setPort(8080)
-                                                                  .setHost("localhost")
-                                                                  .build();
+        ClientSdk clientSdk = new ClientSdkBuilder()
+                .setHost("localhost")
+                .setPort(8080)
+                .build();
 
         clientSdk.init();
         for (int i = 0; i < 10; ++i) {
@@ -39,7 +43,7 @@ public class ClientSdk {
     }
 
     public void init() {
-        astroConnector.initDisplay();
+        astroConnector.init(port, host);
         astroConnector.connect();
 
         sender = new Sender(astroConnector);
@@ -50,26 +54,24 @@ public class ClientSdk {
         sender.send(sendingMessage);
     }
 
-    public class AstroConnectorBuilder {
+    public static class ClientSdkBuilder {
         private int port;
         private String host;
 
-        public int getPort() { return port; }
-
-        public AstroConnectorBuilder setPort(int port) {
+        public ClientSdkBuilder setPort(int port) {
             this.port = port;
+
             return this;
         }
 
-        public String getHost() { return host; }
-
-        public AstroConnectorBuilder setHost(String host) {
+        public ClientSdkBuilder setHost(String host) {
             this.host = host;
+
             return this;
         }
 
-        public AstroConnector build() { return new AstroConnector(this); }
-
-        ;
+        public ClientSdk build() {
+            return new ClientSdk(this);
+        }
     }
 }
