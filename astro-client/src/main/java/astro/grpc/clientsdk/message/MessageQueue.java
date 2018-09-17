@@ -29,14 +29,15 @@ public class MessageQueue {
 
     public synchronized boolean put(AstroMessage message) {
         if(isFull()) {
-            logger.error("MessageQueue is full");
+            logger.error("MessageQueue is full.");
+            logger.error("Failed to put data {} in queue", message);
             return false;
         }
 
         try {
             messageQueue.put(message);
-        } catch(Exception e) {
-            logger.error("Failed to put data {} int queue", message);
+        } catch (InterruptedException e) {
+            logger.error("Failed to put data {} in queue", message);
         }
 
         return true;
@@ -44,10 +45,11 @@ public class MessageQueue {
 
     public synchronized AstroMessage poll(long timeout, TimeUnit unit) {
         AstroMessage returnMessage = null;
+
         try {
             returnMessage = messageQueue.poll(timeout, unit);
-        } catch(Exception e) {
-            logger.error("Failed to poll data in queue : {}", e.getMessage());
+        } catch (InterruptedException e) {
+            logger.error("Failed to poll data in queue : {}", returnMessage.getIndex());
         }
 
         return returnMessage;

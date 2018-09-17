@@ -23,6 +23,11 @@ public class ClientSdk {
         host = builder.host;
         messageBuilder = new MessageBuilder();
         astroConnector = new AstroConnector();
+
+        astroConnector.init(port, host);
+        astroConnector.connect();
+
+        sender = new Sender(astroConnector);
     }
 
     public static void main(String args[]) {
@@ -31,22 +36,16 @@ public class ClientSdk {
                 .setPort(8080)
                 .build();
 
-        clientSdk.init();
-        for (int i = 0; i < 10; ++i) {
-            clientSdk.send("sample", "message");
-            try {
-                TimeUnit.SECONDS.sleep(2);
-            } catch (Exception e) {
-
-            }
+        for(int i = 0; i < 50100; ++i) {
+            clientSdk.send("sample", "test" + i);
         }
-    }
 
-    public void init() {
-        astroConnector.init(port, host);
-        astroConnector.connect();
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        sender = new Sender(astroConnector);
     }
 
     public void send(String topic, String message) {

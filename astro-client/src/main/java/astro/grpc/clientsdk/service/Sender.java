@@ -21,37 +21,37 @@ public class Sender {
 
     public Sender(AstroConnector astroConnector) {
         this.astroConnector = astroConnector;
-        if (astroConnector.getBlockingStub() != null) {
-            threadPool();
-        }
+        threadPool();
     }
 
     public void threadPool() {
         service.submit(() -> {
+            AstroMessage value = null;
             while (opener.get()) {
                 try {
-                    AstroMessage value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
+                    value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
+
                     if (value != null) {
                         Return result = astroConnector.getBlockingStub().sendMessage(value);
                         logger.debug("Message transfered : {}", value);
 
                         // 너무 위험함, 계속 전송 안되면 행걸려
-                        while (result.getReturnCode() == 1) {
-                            result = astroConnector.getBlockingStub().sendMessage(value);
+
+                        if (result.getReturnCode() == 1) {
+                            messageQueue.put(value);
                         }
                     }
-                } catch (Exception e) {
-                    logger.error("Message transter error");
+
+                } catch (RuntimeException e) {
+                    logger.error("Message transter error : {}", value.getIndex());
+                    messageQueue.put(value);
                 }
             }
         });
     }
 
     public void send(AstroMessage message) {
-        try {
-            messageQueue.put(message);
-        } catch (Exception e) {
-            logger.error("Failed to transfer message");
-        }
+        messageQueue.put(message);
     }
+
 }

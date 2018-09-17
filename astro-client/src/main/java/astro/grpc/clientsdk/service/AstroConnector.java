@@ -1,7 +1,6 @@
 package astro.grpc.clientsdk.service;
 
 import astro.com.message.TransportGrpc;
-import astro.grpc.clientsdk.ClientSdk;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ public class AstroConnector {
     private void initDisplay() {
         logger.info("Client Connector Initialization-----------------");
         logger.info("Host : {}", host);
-        logger.info("port {}", port);
+        logger.info("port : {}", port);
         logger.info("------------------------------------------------");
     }
 
@@ -34,12 +33,11 @@ public class AstroConnector {
             logger.error("Server not found");
         }
 
-        try {
-            this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-            this.blockingStub = TransportGrpc.newBlockingStub(channel);
-        } catch (Exception e) {
-            logger.error("Connection fail. Cannot find server port");
-        }
+        //연결 오류처리
+        this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+        this.blockingStub = TransportGrpc.newBlockingStub(channel);
+
+        logger.info("Connected to server");
     }
 
     public TransportGrpc.TransportBlockingStub getBlockingStub() {
