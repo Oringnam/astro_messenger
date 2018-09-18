@@ -36,7 +36,7 @@ public class ServerManager {
         try {
             server = ServerBuilder.forPort(port).addService(grpcService).build().start();
         } catch (IOException e) {
-            logger.info("astro.grpc.server.Server open fail", e);
+            logger.error("astro.grpc.server.Server open fail");
             return false;
         }
 

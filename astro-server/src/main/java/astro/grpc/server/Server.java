@@ -30,8 +30,7 @@ public class Server {
     private AstroJobs astroJobs;
 
     private int workers = 10;
-
-
+    
 
     public Server() {
         config = new AppConfig("server.properties");

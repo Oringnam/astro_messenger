@@ -1,6 +1,6 @@
 package astro.grpc.clientsdk.service;
 
-import astro.com.message.AstroMessage;
+import astro.com.message.ACK;
 import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
 import astro.grpc.clientsdk.message.MessageBuilder;
@@ -14,6 +14,7 @@ public class AstroConnector {
     private ManagedChannel channel = null;
     private TransportGrpc.TransportBlockingStub blockingStub = null;
     private MessageBuilder messageBuilder = new MessageBuilder();
+    private int requestCode = 100;
 
     private int port;
     private String host;
@@ -42,9 +43,10 @@ public class AstroConnector {
         this.blockingStub = TransportGrpc.newBlockingStub(channel);
 
         try {
-            AstroMessage testMesaage = messageBuilder.makeMessage("test", "001");
-            Return result = blockingStub.sendMessage(testMesaage);
-            if(result.getReturnCode() == 000) {
+            ACK request = ACK.newBuilder().setACKCode(requestCode).build();
+            Return result = blockingStub.sendACK(request);
+
+            if(result.getReturnCode() == requestCode + 1) {
                 logger.info("Connected to server");
 
                 return true;

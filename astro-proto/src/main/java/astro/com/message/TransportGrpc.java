@@ -54,6 +54,33 @@ public final class TransportGrpc {
      return getSendMessageMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<astro.com.message.ACK,
+      astro.com.message.Return> getSendACKMethod;
+
+  public static io.grpc.MethodDescriptor<astro.com.message.ACK,
+      astro.com.message.Return> getSendACKMethod() {
+    io.grpc.MethodDescriptor<astro.com.message.ACK, astro.com.message.Return> getSendACKMethod;
+    if ((getSendACKMethod = TransportGrpc.getSendACKMethod) == null) {
+      synchronized (TransportGrpc.class) {
+        if ((getSendACKMethod = TransportGrpc.getSendACKMethod) == null) {
+          TransportGrpc.getSendACKMethod = getSendACKMethod = 
+              io.grpc.MethodDescriptor.<astro.com.message.ACK, astro.com.message.Return>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "Transport", "sendACK"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  astro.com.message.ACK.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  astro.com.message.Return.getDefaultInstance()))
+                  .setSchemaDescriptor(new TransportMethodDescriptorSupplier("sendACK"))
+                  .build();
+          }
+        }
+     }
+     return getSendACKMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -88,6 +115,13 @@ public final class TransportGrpc {
       asyncUnimplementedUnaryCall(getSendMessageMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void sendACK(astro.com.message.ACK request,
+        io.grpc.stub.StreamObserver<astro.com.message.Return> responseObserver) {
+      asyncUnimplementedUnaryCall(getSendACKMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -97,6 +131,13 @@ public final class TransportGrpc {
                 astro.com.message.AstroMessage,
                 astro.com.message.Return>(
                   this, METHODID_SEND_MESSAGE)))
+          .addMethod(
+            getSendACKMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                astro.com.message.ACK,
+                astro.com.message.Return>(
+                  this, METHODID_SEND_ACK)))
           .build();
     }
   }
@@ -126,6 +167,14 @@ public final class TransportGrpc {
       asyncUnaryCall(
           getChannel().newCall(getSendMessageMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void sendACK(astro.com.message.ACK request,
+        io.grpc.stub.StreamObserver<astro.com.message.Return> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getSendACKMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -151,6 +200,13 @@ public final class TransportGrpc {
     public astro.com.message.Return sendMessage(astro.com.message.AstroMessage request) {
       return blockingUnaryCall(
           getChannel(), getSendMessageMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public astro.com.message.Return sendACK(astro.com.message.ACK request) {
+      return blockingUnaryCall(
+          getChannel(), getSendACKMethod(), getCallOptions(), request);
     }
   }
 
@@ -179,9 +235,18 @@ public final class TransportGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSendMessageMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<astro.com.message.Return> sendACK(
+        astro.com.message.ACK request) {
+      return futureUnaryCall(
+          getChannel().newCall(getSendACKMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_SEND_MESSAGE = 0;
+  private static final int METHODID_SEND_ACK = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -202,6 +267,10 @@ public final class TransportGrpc {
       switch (methodId) {
         case METHODID_SEND_MESSAGE:
           serviceImpl.sendMessage((astro.com.message.AstroMessage) request,
+              (io.grpc.stub.StreamObserver<astro.com.message.Return>) responseObserver);
+          break;
+        case METHODID_SEND_ACK:
+          serviceImpl.sendACK((astro.com.message.ACK) request,
               (io.grpc.stub.StreamObserver<astro.com.message.Return>) responseObserver);
           break;
         default:
@@ -266,6 +335,7 @@ public final class TransportGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new TransportFileDescriptorSupplier())
               .addMethod(getSendMessageMethod())
+              .addMethod(getSendACKMethod())
               .build();
         }
       }

@@ -24,6 +24,11 @@ public final class MessageProto {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Return_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_ACK_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_ACK_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -36,10 +41,20 @@ public final class MessageProto {
       "\n\026MessageStructure.proto\"]\n\014AstroMessage" +
       "\022\r\n\005topic\030\001 \001(\t\022\r\n\005index\030\002 \001(\005\022\020\n\010dateti" +
       "me\030\003 \001(\003\022\014\n\004uuid\030\004 \001(\t\022\017\n\007message\030\005 \001(\t\"" +
-      "\034\n\006Return\022\022\n\nreturnCode\030\001 \001(\00524\n\tTranspo" +
-      "rt\022\'\n\013sendMessage\022\r.AstroMessage\032\007.Retur" +
-      "n\"\000B)\n\021astro.com.messageB\014MessageProtoP\001" +
-      "\242\002\003RTGb\006proto3"
+      "\203\003\n\006Return\022\022\n\nreturnCode\030\001 \001(\005\"2\n\013succes" +
+      "sCode\022\026\n\022SuccessCodeDefault\020\000\022\013\n\007Success" +
+      "\020d\"\237\001\n\020messageErrorCode\022\033\n\027MessageErrorC" +
+      "odeDefault\020\000\022\026\n\021AstroMessage_Null\020\310\001\022\016\n\t" +
+      "Uuid_Null\020\311\001\022\017\n\nTopic_Null\020\312\001\022\021\n\014Message" +
+      "_Null\020\313\001\022\016\n\tDate_Zero\020\314\001\022\022\n\rIndex_Invali" +
+      "d\020\315\001\"S\n\020storingErrorCode\022\033\n\027StoringError" +
+      "codeDefault\020\000\022\017\n\nQueue_Full\020\255\002\022\021\n\014Storag" +
+      "e_Full\020\256\002\":\n\tErrorCode\022\024\n\020ErrorCodeDefau" +
+      "lt\020\000\022\027\n\022Unrecognized_Error\020\330\004\"\026\n\003ACK\022\017\n\007" +
+      "ACKCode\030\001 \001(\0052P\n\tTransport\022\'\n\013sendMessag" +
+      "e\022\r.AstroMessage\032\007.Return\"\000\022\032\n\007sendACK\022\004" +
+      ".ACK\032\007.Return\"\000B)\n\021astro.com.messageB\014Me" +
+      "ssageProtoP\001\242\002\003RTGb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -65,6 +80,12 @@ public final class MessageProto {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Return_descriptor,
         new java.lang.String[] { "ReturnCode", });
+    internal_static_ACK_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_ACK_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_ACK_descriptor,
+        new java.lang.String[] { "ACKCode", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

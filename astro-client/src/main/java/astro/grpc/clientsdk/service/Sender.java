@@ -37,7 +37,9 @@ public class Sender {
 
                         // 너무 위험함, 계속 전송 안되면 행걸려
 
-                        if (result.getReturnCode() == 1) {
+                        if (result.getReturnCode() != Return.successCode.Success_VALUE) {
+                            errorCodeChecker(result.getReturnCode());
+
                             messageQueue.put(value);
                         }
                     }
@@ -52,6 +54,34 @@ public class Sender {
 
     public void send(AstroMessage message) {
         messageQueue.put(message);
+    }
+
+    private void errorCodeChecker(int errorCode) {
+        switch (errorCode) {
+            case Return.messageErrorCode.AstroMessage_Null_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.AstroMessage_Null);
+                break;
+            case Return.messageErrorCode.Uuid_Null_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.Uuid_Null);
+                break;
+            case Return.messageErrorCode.Topic_Null_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.Topic_Null);
+                break;
+            case Return.messageErrorCode.Message_Null_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.Message_Null);
+                break;
+            case Return.messageErrorCode.Date_Zero_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.Date_Zero);
+                break;
+            case Return.messageErrorCode.Index_Invalid_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.messageErrorCode.Index_Invalid);
+                break;
+
+            case Return.storingErrorCode.Queue_Full_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.storingErrorCode.Queue_Full);
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+             case Return.ErrorCode.Unrecognized_Error_VALUE : logger.warn("Error code [{}] : {}", errorCode, Return.ErrorCode.Unrecognized_Error);
+                break;
+        }
     }
 
 }

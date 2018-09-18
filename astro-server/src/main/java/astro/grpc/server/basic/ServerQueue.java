@@ -30,13 +30,16 @@ public class ServerQueue {
     // 다수의 요청 --> 동기화 문제
     public synchronized boolean put(AstroMessage message) {
         if(isFull()) {
+            logger.warn("Message queue is full");
             return false;
         }
 
         try {
             queue.put(message);
         } catch (InterruptedException e) {
-            logger.info("Message enqueue is failed : {}", e.getMessage());
+            logger.info("Message enqueue is failed");
+
+            return false;
         }
 
         return true;
@@ -48,7 +51,9 @@ public class ServerQueue {
         try {
             value = queue.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Message dequeue is failed");
+
+            return null;
         }
 
         return (AstroMessage) value;

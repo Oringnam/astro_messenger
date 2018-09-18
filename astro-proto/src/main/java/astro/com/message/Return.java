@@ -80,6 +80,452 @@ private static final long serialVersionUID = 0L;
             astro.com.message.Return.class, astro.com.message.Return.Builder.class);
   }
 
+  /**
+   * Protobuf enum {@code Return.successCode}
+   */
+  public enum successCode
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>SuccessCodeDefault = 0;</code>
+     */
+    SuccessCodeDefault(0),
+    /**
+     * <code>Success = 100;</code>
+     */
+    Success(100),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>SuccessCodeDefault = 0;</code>
+     */
+    public static final int SuccessCodeDefault_VALUE = 0;
+    /**
+     * <code>Success = 100;</code>
+     */
+    public static final int Success_VALUE = 100;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static successCode valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static successCode forNumber(int value) {
+      switch (value) {
+        case 0: return SuccessCodeDefault;
+        case 100: return Success;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<successCode>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        successCode> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<successCode>() {
+            public successCode findValueByNumber(int number) {
+              return successCode.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return astro.com.message.Return.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final successCode[] VALUES = values();
+
+    public static successCode valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private successCode(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:Return.successCode)
+  }
+
+  /**
+   * Protobuf enum {@code Return.messageErrorCode}
+   */
+  public enum messageErrorCode
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>MessageErrorCodeDefault = 0;</code>
+     */
+    MessageErrorCodeDefault(0),
+    /**
+     * <code>AstroMessage_Null = 200;</code>
+     */
+    AstroMessage_Null(200),
+    /**
+     * <code>Uuid_Null = 201;</code>
+     */
+    Uuid_Null(201),
+    /**
+     * <code>Topic_Null = 202;</code>
+     */
+    Topic_Null(202),
+    /**
+     * <code>Message_Null = 203;</code>
+     */
+    Message_Null(203),
+    /**
+     * <code>Date_Zero = 204;</code>
+     */
+    Date_Zero(204),
+    /**
+     * <code>Index_Invalid = 205;</code>
+     */
+    Index_Invalid(205),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>MessageErrorCodeDefault = 0;</code>
+     */
+    public static final int MessageErrorCodeDefault_VALUE = 0;
+    /**
+     * <code>AstroMessage_Null = 200;</code>
+     */
+    public static final int AstroMessage_Null_VALUE = 200;
+    /**
+     * <code>Uuid_Null = 201;</code>
+     */
+    public static final int Uuid_Null_VALUE = 201;
+    /**
+     * <code>Topic_Null = 202;</code>
+     */
+    public static final int Topic_Null_VALUE = 202;
+    /**
+     * <code>Message_Null = 203;</code>
+     */
+    public static final int Message_Null_VALUE = 203;
+    /**
+     * <code>Date_Zero = 204;</code>
+     */
+    public static final int Date_Zero_VALUE = 204;
+    /**
+     * <code>Index_Invalid = 205;</code>
+     */
+    public static final int Index_Invalid_VALUE = 205;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static messageErrorCode valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static messageErrorCode forNumber(int value) {
+      switch (value) {
+        case 0: return MessageErrorCodeDefault;
+        case 200: return AstroMessage_Null;
+        case 201: return Uuid_Null;
+        case 202: return Topic_Null;
+        case 203: return Message_Null;
+        case 204: return Date_Zero;
+        case 205: return Index_Invalid;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<messageErrorCode>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        messageErrorCode> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<messageErrorCode>() {
+            public messageErrorCode findValueByNumber(int number) {
+              return messageErrorCode.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return astro.com.message.Return.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final messageErrorCode[] VALUES = values();
+
+    public static messageErrorCode valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private messageErrorCode(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:Return.messageErrorCode)
+  }
+
+  /**
+   * Protobuf enum {@code Return.storingErrorCode}
+   */
+  public enum storingErrorCode
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>StoringErrorcodeDefault = 0;</code>
+     */
+    StoringErrorcodeDefault(0),
+    /**
+     * <code>Queue_Full = 301;</code>
+     */
+    Queue_Full(301),
+    /**
+     * <code>Storage_Full = 302;</code>
+     */
+    Storage_Full(302),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>StoringErrorcodeDefault = 0;</code>
+     */
+    public static final int StoringErrorcodeDefault_VALUE = 0;
+    /**
+     * <code>Queue_Full = 301;</code>
+     */
+    public static final int Queue_Full_VALUE = 301;
+    /**
+     * <code>Storage_Full = 302;</code>
+     */
+    public static final int Storage_Full_VALUE = 302;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static storingErrorCode valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static storingErrorCode forNumber(int value) {
+      switch (value) {
+        case 0: return StoringErrorcodeDefault;
+        case 301: return Queue_Full;
+        case 302: return Storage_Full;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<storingErrorCode>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        storingErrorCode> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<storingErrorCode>() {
+            public storingErrorCode findValueByNumber(int number) {
+              return storingErrorCode.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return astro.com.message.Return.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final storingErrorCode[] VALUES = values();
+
+    public static storingErrorCode valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private storingErrorCode(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:Return.storingErrorCode)
+  }
+
+  /**
+   * Protobuf enum {@code Return.ErrorCode}
+   */
+  public enum ErrorCode
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>ErrorCodeDefault = 0;</code>
+     */
+    ErrorCodeDefault(0),
+    /**
+     * <code>Unrecognized_Error = 600;</code>
+     */
+    Unrecognized_Error(600),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>ErrorCodeDefault = 0;</code>
+     */
+    public static final int ErrorCodeDefault_VALUE = 0;
+    /**
+     * <code>Unrecognized_Error = 600;</code>
+     */
+    public static final int Unrecognized_Error_VALUE = 600;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ErrorCode valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static ErrorCode forNumber(int value) {
+      switch (value) {
+        case 0: return ErrorCodeDefault;
+        case 600: return Unrecognized_Error;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ErrorCode>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        ErrorCode> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ErrorCode>() {
+            public ErrorCode findValueByNumber(int number) {
+              return ErrorCode.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return astro.com.message.Return.getDescriptor().getEnumTypes().get(3);
+    }
+
+    private static final ErrorCode[] VALUES = values();
+
+    public static ErrorCode valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private ErrorCode(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:Return.ErrorCode)
+  }
+
   public static final int RETURNCODE_FIELD_NUMBER = 1;
   private int returnCode_;
   /**

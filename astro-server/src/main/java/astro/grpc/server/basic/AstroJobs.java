@@ -28,17 +28,17 @@ public class AstroJobs implements Runnable {
     @Override
     public void run() {
         while (opener.get()) {
-            try {
-                AstroMessage astroMessage = queue.poll(100);
-                if (astroMessage == null) {
-                    continue;
-                }
 
-                mariaManager.store(astroMessage);
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            AstroMessage astroMessage = queue.poll(100);
+            if (astroMessage == null) {
+                continue;
             }
+
+            boolean storeSwitch = mariaManager.store(astroMessage);
+            if(!storeSwitch) {      //저장 실패
+                queue.put(astroMessage);
+            }
+
         }
     }
 

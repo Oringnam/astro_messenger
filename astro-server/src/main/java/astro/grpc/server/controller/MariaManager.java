@@ -17,7 +17,7 @@ public class MariaManager {
     private String ip = "localhost";
     private String port = "3306";
 
-    private String database = "myfirstdb";
+    private String database = "sample";
 
     private String id = "root";
     private String password = "";
@@ -107,7 +107,7 @@ public class MariaManager {
 
     public boolean store(astro.com.message.AstroMessage value) {
         if (isFull()) {
-            logger.info("Storage is full");
+            logger.info("Storage is full"); //저장공간 꽉참
             return false;
         }
 
@@ -117,13 +117,18 @@ public class MariaManager {
             sql = setInsertQuery(table, value);
             resultSet = sql.executeQuery();
             storeDisplay(dateTransform(value.getDatetime()));
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            logger.error("Storing error");            //invalid value
+
+            return false;
+        } catch(Exception e) {
             logger.error("Storing error");
             logger.info("Table is not on DB. Create Table...");
 
             boolean createSwitch = createTable(table);
             if(createSwitch) {
                 logger.info("Table created");
+                store(value);
             }
         }
 
@@ -154,13 +159,13 @@ public class MariaManager {
 
     private boolean createTable(String table) {
         try {
-            String query = "create table" + "`" + table + "`"
+            String query = "CREATE TABLE " + "`" + table + "`"
                     + "(`uuid` char(50) not null,"
                     + "`datetime` datetime,"
                     + "`index` int(11),"
                     + "`topic` char(50),"
-                    + "`message` char(50),"
-                    + "primary key (`uuid`));";
+                    + "`message` varchar(15000),"
+                    + "primary key (`uuid`))";
 
             sql = dbConnector.prepareStatement(query);
             resultSet = sql.executeQuery();

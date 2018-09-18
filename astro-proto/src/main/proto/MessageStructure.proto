@@ -7,6 +7,7 @@ option objc_class_prefix = "RTG";
 
 service Transport {
     rpc sendMessage(AstroMessage) returns (Return) {}
+    rpc sendACK(ACK) returns (Return) {}
 }
 
 message AstroMessage {
@@ -18,5 +19,40 @@ message AstroMessage {
 }
 
 message Return {
+    enum successCode {
+        SuccessCodeDefault = 0;
+
+        Success = 100;
+    }
+
+    enum messageErrorCode {
+        MessageErrorCodeDefault = 0;
+
+        AstroMessage_Null = 200;
+        Uuid_Null = 201;
+        Topic_Null = 202;
+        Message_Null = 203;
+        Date_Zero = 204;
+        Index_Invalid = 205;
+    }
+
+    enum storingErrorCode {
+        StoringErrorcodeDefault = 0;
+
+        Queue_Full = 301;
+        Storage_Full = 302;
+    }
+
+    enum ErrorCode {
+        ErrorCodeDefault = 0;
+
+        Unrecognized_Error = 600;
+    }
+
+
     int32 returnCode = 1;
+}
+
+message ACK {
+    int32 ACKCode = 1;
 }
