@@ -1,6 +1,9 @@
 package astro.grpc.clientsdk.service;
 
+import astro.com.message.AstroMessage;
+import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
+import astro.grpc.clientsdk.message.MessageBuilder;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
@@ -10,6 +13,7 @@ public class AstroConnector {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ManagedChannel channel = null;
     private TransportGrpc.TransportBlockingStub blockingStub = null;
+    private MessageBuilder messageBuilder = new MessageBuilder();
 
     private int port;
     private String host;
@@ -28,7 +32,7 @@ public class AstroConnector {
         logger.info("------------------------------------------------");
     }
 
-    public void connect() {
+    public boolean connect() {
         if (host == null) {
             logger.error("Server not found");
         }
@@ -37,7 +41,21 @@ public class AstroConnector {
         this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         this.blockingStub = TransportGrpc.newBlockingStub(channel);
 
-        logger.info("Connected to server");
+        try {
+            AstroMessage testMesaage = messageBuilder.makeMessage("test", "001");
+            Return result = blockingStub.sendMessage(testMesaage);
+            if(result.getReturnCode() == 000) {
+                logger.info("Connected to server");
+
+                return true;
+            }
+        } catch(RuntimeException e) {
+            logger.warn("Cannot connect to server");
+
+            return false;
+        }
+
+        return false;
     }
 
     public TransportGrpc.TransportBlockingStub getBlockingStub() {

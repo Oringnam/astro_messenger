@@ -25,20 +25,24 @@ public class ClientSdk {
         astroConnector = new AstroConnector();
 
         astroConnector.init(port, host);
-        astroConnector.connect();
+        boolean connectSwitch = astroConnector.connect();
 
-        sender = new Sender(astroConnector);
+        if(connectSwitch) {
+            sender = new Sender(astroConnector);
+        } else {
+            logger.error("Connection error.");
+        }
+
+
     }
 
     public static void main(String args[]) {
         ClientSdk clientSdk = new ClientSdkBuilder()
                 .setHost("localhost")
-                .setPort(8080)
+                .setPort(8082)
                 .build();
 
-        for(int i = 0; i < 50100; ++i) {
-            clientSdk.send("sample", "test" + i);
-        }
+        clientSdk.send("weather", "한글");
 
         try {
             TimeUnit.SECONDS.sleep(3);
