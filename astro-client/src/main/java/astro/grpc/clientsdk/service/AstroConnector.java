@@ -1,9 +1,6 @@
 package astro.grpc.clientsdk.service;
 
-import astro.com.message.ACK;
-import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
-import astro.grpc.clientsdk.message.MessageBuilder;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
@@ -13,8 +10,6 @@ public class AstroConnector {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ManagedChannel channel = null;
     private TransportGrpc.TransportBlockingStub blockingStub = null;
-    private MessageBuilder messageBuilder = new MessageBuilder();
-    private int requestCode = 100;
 
     private int port;
     private String host;
@@ -41,21 +36,7 @@ public class AstroConnector {
         //연결 오류처리
         this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         this.blockingStub = TransportGrpc.newBlockingStub(channel);
-
-        try {
-            ACK request = ACK.newBuilder().setACKCode(requestCode).build();
-            Return result = blockingStub.sendACK(request);
-
-            if(result.getReturnCode() == requestCode + 1) {
-                logger.info("Connected to server");
-
-                return true;
-            }
-        } catch(RuntimeException e) {
-            logger.warn("Cannot connect to server");
-
-            return false;
-        }
+        //연결 오류처리
 
         return false;
     }

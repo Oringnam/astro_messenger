@@ -7,7 +7,6 @@ option objc_class_prefix = "RTG";
 
 service Transport {
     rpc sendMessage(AstroMessage) returns (Return) {}
-    rpc sendACK(ACK) returns (Return) {}
 }
 
 message AstroMessage {
@@ -51,8 +50,4 @@ message Return {
 
 
     int32 returnCode = 1;
-}
-
-message ACK {
-    int32 ACKCode = 1;
 }

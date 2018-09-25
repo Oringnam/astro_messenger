@@ -1,6 +1,5 @@
 package astro.grpc.server;
 
-import astro.com.message.ACK;
 import astro.com.message.AstroMessage;
 import astro.com.message.Return;
 import astro.com.message.TransportGrpc;
@@ -12,18 +11,6 @@ public class GrpcService extends TransportGrpc.TransportImplBase {
 
     public GrpcService(ServerQueue queue) {
         this.queue = queue;
-    }
-
-    @Override
-    public void sendACK(ACK request, StreamObserver<Return> responseObserver) {
-        Return result = null;
-        int ACKCode = request.getACKCode();
-        result = Return.newBuilder().setReturnCode(ACKCode + 1).build();
-
-        responseObserver.onNext(result);
-        responseObserver.onCompleted();
-
-        return;
     }
 
     @Override

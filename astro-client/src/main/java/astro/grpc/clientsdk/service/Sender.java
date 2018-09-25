@@ -35,8 +35,6 @@ public class Sender {
                         Return result = astroConnector.getBlockingStub().sendMessage(value);
                         logger.debug("Message transfered : {}", value);
 
-                        // 너무 위험함, 계속 전송 안되면 행걸려
-
                         if (result.getReturnCode() != Return.successCode.Success_VALUE) {
                             errorCodeChecker(result.getReturnCode());
 
@@ -45,7 +43,10 @@ public class Sender {
                     }
 
                 } catch (RuntimeException e) {
-                    logger.error("Message transter error : {}", value.getIndex());
+                    logger.error("Message transfer error : {}", value.getIndex());
+                    messageQueue.put(value);
+                } catch (Exception e) {
+                    logger.warn("Cannot transfer message");
                     messageQueue.put(value);
                 }
             }
