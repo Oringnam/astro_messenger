@@ -31,6 +31,8 @@ public class AstroConnector {
     public boolean connect() {
         if (host == null) {
             logger.error("Server not found");
+
+            return false;
         }
 
         //연결 오류처리
@@ -38,7 +40,7 @@ public class AstroConnector {
         this.blockingStub = TransportGrpc.newBlockingStub(channel);
         //연결 오류처리
 
-        return false;
+        return true;
     }
 
     public TransportGrpc.TransportBlockingStub getBlockingStub() {
