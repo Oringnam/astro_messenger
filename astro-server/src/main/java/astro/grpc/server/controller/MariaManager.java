@@ -50,7 +50,6 @@ public class MariaManager {
         logger.info("url : {}", url);
         logger.info("id : {} ", id);
         logger.info("password : {} ", password);
-//        logger.info("table : {} ", id);
 
         logger.info("------------------\n");
     }
@@ -78,6 +77,12 @@ public class MariaManager {
                 try {
                     url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
                     dbConnector = DriverManager.getConnection(url, id, password);
+
+                    if (dbConnector != null) {
+                        logger.info("DBServer is connected");
+
+                        return true;
+                    }
                 } catch(SQLException se) {
                     logger.error("Connection error");
                 }
@@ -111,17 +116,13 @@ public class MariaManager {
             return false;
         }
 
-        String table = database;
+        String table = selectTable(value.getTopic());
 
         try {
             sql = setInsertQuery(table, value);
             resultSet = sql.executeQuery();
             storeDisplay(dateTransform(value.getDatetime()));
         } catch (SQLException e) {
-            logger.error("Storing error");            //invalid value
-
-            return false;
-        } catch(Exception e) {
             logger.error("Storing error");
             logger.info("Table is not on DB. Create Table...");
 
@@ -130,6 +131,11 @@ public class MariaManager {
                 logger.info("Table created");
                 store(value);
             }
+
+        } catch(Exception e) {
+            logger.error("Storing error");            //invalid value
+
+            return false;
         }
 
         return true;
@@ -160,11 +166,11 @@ public class MariaManager {
     private boolean createTable(String table) {
         try {
             String query = "CREATE TABLE " + "`" + table + "`"
-                    + "(`uuid` char(50) not null,"
-                    + "`datetime` datetime,"
-                    + "`index` int(11),"
-                    + "`topic` char(50),"
-                    + "`message` varchar(15000),"
+                    + "(`" + Server.config.get("table.uuid") + "`" + " char(50) not null,"
+                    + "`" + Server.config.get("table.dateTime") + "`" +  " datetime,"
+                    + "`" + Server.config.get("table.index") + "`" + " int(11),"
+                    + "`" + Server.config.get("table.topic") + "`" + " char(50),"
+                    + "`" + table + "message" + "`" + " varchar(15000),"
                     + "primary key (`uuid`))";
 
             sql = dbConnector.prepareStatement(query);
@@ -193,5 +199,11 @@ public class MariaManager {
     private boolean isFull() {
         //저장 실패시 return true
         return false;
+    }
+
+    private String selectTable(String topic) {
+       String tableName = topic;
+
+       return tableName;
     }
 }
