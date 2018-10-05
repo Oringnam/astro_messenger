@@ -21,10 +21,10 @@ public class Sender {
 
     public Sender(AstroConnector astroConnector) {
         this.astroConnector = astroConnector;
-        threadPool();
+        run();
     }
 
-    public void threadPool() {
+    public void run() {
         service.submit(() -> {
             AstroMessage value = null;
             while (opener.get()) {
@@ -32,8 +32,8 @@ public class Sender {
                     value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
 
                     if (value != null) {
-                        Return result = astroConnector.getBlockingStub().sendMessage(value);
-                        logger.debug("Message transfered : {}", value);
+                        Return result = astroConnector.getBlockingStub().withDeadlineAfter(5000, TimeUnit.MILLISECONDS).sendMessage(value);
+                        logger.info("Message transfered : {}", value.getIndex());
 
                         if (result.getReturnCode() != Return.successCode.Success_VALUE) {
                             errorCodeChecker(result.getReturnCode());
@@ -44,10 +44,8 @@ public class Sender {
 
                 } catch (RuntimeException e) {
                     logger.error("Message transfer error : {}", value.getIndex());
-                    messageQueue.put(value);
                 } catch (Exception e) {
                     logger.warn("Cannot transfer message");
-                    messageQueue.put(value);
                 }
             }
         });

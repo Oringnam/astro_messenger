@@ -32,17 +32,13 @@ public class ClientSdk {
         } else {
             logger.error("Connection error.");
         }
-
-
     }
 
-    public static void main(String args[]) {
-        ClientSdk clientSdk = new ClientSdkBuilder()
-                .setHost("localhost")
-                .setPort(8082)
-                .build();
+/*    public static void main(String args[]) {
+        ClientSdk clientSdk = new ClientSdkBuilder().setPort(8082).setHost("localhost").build();
 
-        clientSdk.send("weather", "한글");
+
+        clientSdk.send("test", "test");
 
         try {
             TimeUnit.SECONDS.sleep(3);
@@ -50,7 +46,8 @@ public class ClientSdk {
             e.printStackTrace();
         }
 
-    }
+        return;
+    }*/
 
     public void send(String topic, String message) {
         AstroMessage sendingMessage = messageBuilder.makeMessage(topic, message);

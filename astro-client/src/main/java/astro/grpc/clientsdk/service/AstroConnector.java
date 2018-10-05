@@ -35,10 +35,8 @@ public class AstroConnector {
             return false;
         }
 
-        //연결 오류처리
         this.channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         this.blockingStub = TransportGrpc.newBlockingStub(channel);
-        //연결 오류처리
 
         return true;
     }
