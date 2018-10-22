@@ -170,7 +170,7 @@ public class MariaManager {
                     + "`" + Server.config.get("table.dateTime") + "`" +  " datetime,"
                     + "`" + Server.config.get("table.index") + "`" + " int(11),"
                     + "`" + Server.config.get("table.topic") + "`" + " char(50),"
-                    + "`" + table + "message" + "`" + " varchar(15000),"
+                    + "`" + table + "message" + "`" + " longtext,"
                     + "primary key (`uuid`))";
 
             sql = dbConnector.prepareStatement(query);
