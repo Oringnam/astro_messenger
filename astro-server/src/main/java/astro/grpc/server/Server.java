@@ -1,5 +1,6 @@
 package astro.grpc.server;
 
+import astro.com.message.AstroMessage;
 import astro.grpc.server.basic.AstroJobs;
 import astro.grpc.server.basic.ServerQueue;
 import astro.grpc.server.config.AppConfig;
@@ -10,7 +11,10 @@ import monitor.AstroMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Server {
     public static AstroMonitor astromonitor = new AstroMonitor();
@@ -53,7 +57,10 @@ public class Server {
 
 
     private boolean init() {
-        queue = new ServerQueue.ServerQueueBuilder().setMaxSize(queueSize).build();
+        queue = ServerQueue.builder()
+                           .maxSize(queueSize)
+                           .queue(new LinkedBlockingQueue<AstroMessage>())
+                           .build();
         grpcService = new GrpcService(queue);
 
         serverManager.init();
@@ -77,15 +84,24 @@ public class Server {
     }
 
     private void runnalbe() {
-        astroJobs = new AstroJobs.AstroJobsBuilder()
-                .setMariaManager(mariaManager)
-                .setServerQueue(queue)
-                .build();
+        astroJobs = AstroJobs.builder()
+                             .mariaManager(mariaManager)
+                             .queue(queue)
+                             .opener(new AtomicBoolean(true))
+                             .logger(LoggerFactory.getLogger(this.getClass()))
+                             .build();
 
-        workerManager = new WorkerManager.WorkerManagerBuilder()
-                .setWorkers(workers)
-                .setAstroJobs(astroJobs)
-                .build();
+        astroJobs.queueNullChecker();
+        astroJobs.mariaNullChecker();
+
+        workerManager = WorkerManager.builder()
+                                     .workers(workers)
+                                     .astroJobs(astroJobs)
+                                     .service(Executors.newFixedThreadPool(workers))
+                                     .logger(LoggerFactory.getLogger(this.getClass()))
+                                     .build();
+
+        workerManager.jobsNullChecker();
 
         workerManager.workerPool();
     }

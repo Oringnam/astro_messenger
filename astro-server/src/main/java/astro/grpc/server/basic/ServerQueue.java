@@ -1,22 +1,20 @@
 package astro.grpc.server.basic;
 
 import astro.com.message.AstroMessage;
+import lombok.Builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+@Builder
 public class ServerQueue {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private int maxSize;
+    private int maxSize = 500000;
     private LinkedBlockingQueue<AstroMessage> queue;
 
-    private ServerQueue(ServerQueueBuilder builder) {
-        this.maxSize = builder.maxSize;
-        this.queue = builder.queue;
-    }
 
     public boolean isFull() {
         if(maxSize <= queue.size()) {
@@ -59,20 +57,4 @@ public class ServerQueue {
         return (AstroMessage) value;
     }
 
-
-    public static class ServerQueueBuilder {
-        // default 50만
-        private int maxSize = 500000;
-
-        private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<>();
-
-        public ServerQueueBuilder setMaxSize(int size) {
-            this.maxSize = size;
-            return this;
-        }
-
-        public ServerQueue build() {
-            return new ServerQueue(this);
-        }
-    }
 }
