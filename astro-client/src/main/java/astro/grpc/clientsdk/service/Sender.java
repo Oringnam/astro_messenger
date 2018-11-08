@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Sender {
+public class Sender implements Runnable {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private ExecutorService service = Executors.newFixedThreadPool(10);
     private MessageQueue messageQueue = new MessageQueue();
@@ -24,6 +24,7 @@ public class Sender {
         run();
     }
 
+    @Override
     public void run() {
         service.submit(() -> {
             AstroMessage value = null;
