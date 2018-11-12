@@ -12,12 +12,12 @@ public class ServerManager {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private io.grpc.Server server = null;
 
-    private int port = 8080;
+    private int serverPort = 8080;
 
     public void init() {
         try {
             String portValue = Server.config.get("server.port");
-            port = Integer.parseInt(portValue);
+            serverPort = Integer.parseInt(portValue);
         } catch (NullPointerException e) {
             logger.warn("config getter is failed : {}", e.getMessage());
         }
@@ -27,20 +27,20 @@ public class ServerManager {
 
     private void initDisplay() {
         logger.info("servermanager init --------");
-        logger.info("port : {} ", port);
+        logger.info("serverPort : {} ", serverPort);
 
         logger.info("------------------\n");
     }
 
     public boolean launching(GrpcService grpcService) {
         try {
-            server = ServerBuilder.forPort(port).addService(grpcService).build().start();
+            server = ServerBuilder.forPort(serverPort).addService(grpcService).build().start();
         } catch (IOException e) {
             logger.error("astro.grpc.server.Server open fail");
             return false;
         }
 
-        logger.info("astro.grpc.server.Server is ready, {}", port);
+        logger.info("astro.grpc.server.Server is ready, {}", serverPort);
         return true;
     }
 }

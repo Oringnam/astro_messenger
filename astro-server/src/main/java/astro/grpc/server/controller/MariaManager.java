@@ -65,32 +65,44 @@ public class MariaManager {
             }
         } catch (ClassNotFoundException e) {
             logger.error("Driver load fail");
+
             return false;
-        } catch (SQLException e) {
+        } catch (SQLException e) {      //데이터 베이스가 존재하지 않는 경우
             logger.error("DB connection fail");
             logger.info("Database doesn't exist. Create database...");
 
-            boolean connectSwitch = createDatabase(database);
+            boolean creationSuccess = createDatabase(database);
 
-            if(connectSwitch) {
+            if(creationSuccess) {
                 logger.info("Database created : {}", database);
-                try {
-                    url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
-                    dbConnector = DriverManager.getConnection(url, id, password);
+                boolean reConnectSuccess = reConnect();
 
-                    if (dbConnector != null) {
-                        logger.info("DBServer is connected");
-
-                        return true;
-                    }
-                } catch(SQLException se) {
-                    logger.error("Connection error");
-                }
+                return reConnectSuccess;
+            } else {
+                logger.error("Database creation error");
             }
-            return false;
         }
 
         return true;
+    }
+
+    private boolean reConnect() {
+        logger.info("Reconnect to Database : ");
+
+        try {
+            url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
+            dbConnector = DriverManager.getConnection(url, id, password);
+
+            if (dbConnector != null) {
+                logger.info("DBServer is connected");
+
+                return true;
+            }
+        } catch(SQLException se) {
+            return false;
+        }
+
+        return false;
     }
 
     private boolean createDatabase(String dataBase) {
@@ -102,6 +114,10 @@ public class MariaManager {
             sql = dbConnector.prepareStatement(query);
             resultSet = sql.executeQuery();
         } catch(SQLException e) {
+            logger.error("Database creation error");
+
+            return false;
+        } catch(Exception e) {
             logger.error("Database creation error");
 
             return false;
@@ -126,8 +142,8 @@ public class MariaManager {
             logger.error("Storing error");
             logger.info("Table is not on DB. Create Table...");
 
-            boolean createSwitch = createTable(table);
-            if(createSwitch) {
+            boolean createSuccess = createTable(table);
+            if(createSuccess) {
                 logger.info("Table created");
                 store(value);
             }
@@ -177,6 +193,7 @@ public class MariaManager {
             resultSet = sql.executeQuery();
         } catch(SQLException e) {
             logger.error("Table creation error");
+
             return false;
         }
         return true;
