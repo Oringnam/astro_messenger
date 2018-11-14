@@ -219,8 +219,8 @@ public class MariaManager {
     }
 
     private String selectTable(String topic) {
-       String tableName = topic;
+        String tableName = topic;
 
-       return tableName;
+        return tableName;
     }
 }

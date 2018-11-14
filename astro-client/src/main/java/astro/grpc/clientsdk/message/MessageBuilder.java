@@ -4,7 +4,7 @@ import astro.com.message.AstroMessage;
 import message.AstroCoder;
 
 public class MessageBuilder {
-    int index;
+    private int index;
 
     public MessageBuilder() {
         index = 0;
