@@ -13,7 +13,7 @@ public class WorkerManager {
     Logger logger;
     private ExecutorService service;
     private AstroJobs astroJobs;
-    private int workers = 10;
+    private int workers;
 
 
     public void workerPool() {

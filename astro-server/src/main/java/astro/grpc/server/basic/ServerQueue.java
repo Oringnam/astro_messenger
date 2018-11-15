@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 @Builder
 public class ServerQueue {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger;
 
-    private int maxSize = 500000;
+    private int maxSize;
     private LinkedBlockingQueue<AstroMessage> queue;
 
 
