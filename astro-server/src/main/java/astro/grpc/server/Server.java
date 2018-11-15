@@ -107,6 +107,6 @@ public class Server {
     }
 
     public void close() {
-
+        serverManager.getServer().shutdown();
     }
 }

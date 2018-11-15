@@ -43,4 +43,8 @@ public class ServerManager {
         logger.info("astro.grpc.server.Server is ready, {}", serverPort);
         return true;
     }
+
+    public io.grpc.Server getServer() {
+        return server;
+    }
 }
