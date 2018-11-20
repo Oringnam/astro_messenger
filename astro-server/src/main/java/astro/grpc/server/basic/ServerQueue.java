@@ -2,6 +2,7 @@ package astro.grpc.server.basic;
 
 import astro.com.message.AstroMessage;
 import lombok.Builder;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,11 +10,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Builder
+@Log4j2
 public class ServerQueue {
-    private Logger logger;
+    @Builder.Default
+    private int maxSize = 500000;
 
-    private int maxSize;
-    private LinkedBlockingQueue<AstroMessage> queue;
+    @Builder.Default
+    private LinkedBlockingQueue<AstroMessage> queue = new LinkedBlockingQueue<AstroMessage>();
 
 
     public boolean isFull() {
@@ -28,14 +31,14 @@ public class ServerQueue {
     // 다수의 요청 --> 동기화 문제
     public synchronized boolean put(AstroMessage message) {
         if(isFull()) {
-            logger.warn("Message queue is full");
+            log.warn("Message queue is full");
             return false;
         }
 
         try {
             queue.put(message);
         } catch (InterruptedException e) {
-            logger.info("Message enqueue is failed");
+            log.info("Message enqueue is failed");
 
             return false;
         }
@@ -49,7 +52,7 @@ public class ServerQueue {
         try {
             value = queue.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            logger.error("Message dequeue is failed");
+            log.error("Message dequeue is failed");
 
             return null;
         }

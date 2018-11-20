@@ -59,7 +59,6 @@ public class Server {
     private boolean init() {
         queue = ServerQueue.builder()
                            .maxSize(queueSize)
-                           .queue(new LinkedBlockingQueue<AstroMessage>())
                            .build();
         grpcService = new GrpcService(queue);
 
@@ -87,18 +86,14 @@ public class Server {
         astroJobs = AstroJobs.builder()
                              .mariaManager(mariaManager)
                              .queue(queue)
-                             .opener(new AtomicBoolean(true))
-                             .logger(LoggerFactory.getLogger(this.getClass()))
                              .build();
 
         astroJobs.queueNullChecker();
         astroJobs.mariaNullChecker();
 
         workerManager = WorkerManager.builder()
-                                     .workers(workers)
                                      .astroJobs(astroJobs)
-                                     .service(Executors.newFixedThreadPool(workers))
-                                     .logger(LoggerFactory.getLogger(this.getClass()))
+                                     .workers(workers)
                                      .build();
 
         workerManager.jobsNullChecker();

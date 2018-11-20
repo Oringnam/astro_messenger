@@ -3,15 +3,15 @@ package astro.grpc.server.basic;
 import astro.com.message.AstroMessage;
 import astro.grpc.server.controller.MariaManager;
 import lombok.Builder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Builder
+@Log4j2
 public class AstroJobs implements Runnable {
-    private AtomicBoolean opener;
-    private Logger logger;
+    @Builder.Default
+    private AtomicBoolean opener = new AtomicBoolean(true);
     private ServerQueue queue;
     private MariaManager mariaManager;
 
@@ -35,13 +35,13 @@ public class AstroJobs implements Runnable {
 
     public void queueNullChecker() {
         if(queue == null) {
-            logger.warn("AstroJbosClass failed to load ServerQueue");
+            log.warn("AstroJbosClass failed to load ServerQueue");
         }
     }
 
     public void mariaNullChecker() {
         if(mariaManager == null) {
-            logger.warn("AstroJbosClass failed to load MariaManager");
+            log.warn("AstroJbosClass failed to load MariaManager");
         }
     }
 
