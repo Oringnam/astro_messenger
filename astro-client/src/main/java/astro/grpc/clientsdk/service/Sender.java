@@ -16,11 +16,13 @@ public class Sender implements Runnable {
     private ExecutorService service = Executors.newFixedThreadPool(10);
     private MessageQueue messageQueue = new MessageQueue();
     private AstroConnector astroConnector;
+    private int messageErrorCounter;
 
     private AtomicBoolean opener = new AtomicBoolean(true);
 
     public Sender(AstroConnector astroConnector) {
         this.astroConnector = astroConnector;
+        messageErrorCounter = 0;
         run();
     }
 
@@ -32,21 +34,33 @@ public class Sender implements Runnable {
                 try {
                     value = messageQueue.poll(100, TimeUnit.MILLISECONDS);
 
+                    if(messageErrorCounter > 10) {
+                        logger.warn("Connection Error. Please check the connection");
+                    }
+
                     if (value != null) {
-                        Return result = astroConnector.getBlockingStub().withDeadlineAfter(5000, TimeUnit.MILLISECONDS).sendMessage(value);
+                        Return result = astroConnector.getBlockingStub()
+                                                      .withDeadlineAfter(5000, TimeUnit.MILLISECONDS)
+                                                      .sendMessage(value);
                         logger.info("Message transfered : {}", value.getIndex());
 
                         if (result.getReturnCode() != Return.successCode.Success_VALUE) {
                             errorCodeChecker(result.getReturnCode());
 
                             messageQueue.put(value);
+                        } else {
+                            messageErrorCounter = 0;
                         }
                     }
 
                 } catch (RuntimeException e) {
                     logger.error("Message transfer error : {}", value.getIndex());
+                    messageErrorCounter++;
+                    messageQueue.put(value);
                 } catch (Exception e) {
-                    logger.warn("Cannot transfer message");
+                    logger.error("Cannot transfer message");
+                    messageErrorCounter++;
+                    messageQueue.put(value);
                 }
             }
         });
