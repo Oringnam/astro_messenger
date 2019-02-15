@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="MariaMapper">
+    <select id="createDB" parameterType="string">
+        CREATE DATABASE #{dataBase};
+    </select>
+    
+    <select id="createTable" parameterType="string">
+        CREATE TABLE #{table} (
+            uuid char(50) NOT NULL,
+            datetime datetime NOT NULL,
+            index int(11) NOT NULL,
+            topic char(50) NOT NULL,
+            message longtext NOT NULL,
+            PRIMARY KEY(uuid)
+        );
+    </select>
+    
+    <insert id="insert" parameterType="hashmap">
+        INSERT INTO #{table}
+        VALUES(#{uuid}, #{datetime}, #{uuid}, #{index}, #{topic}, #{message});
+    </insert>
+</mapper>
