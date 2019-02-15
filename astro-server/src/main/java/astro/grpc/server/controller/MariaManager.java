@@ -1,14 +1,23 @@
 package astro.grpc.server.controller;
 
 import astro.grpc.server.Server;
+import astro.grpc.server.dao.MariaDAO;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 
 public class MariaManager {
-    public Connection dbConnector = null;
+    private SqlSessionFactory sqlSessionFactory;
+    private MariaDAO dao;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private PreparedStatement sql = null;
     private ResultSet resultSet = null;
@@ -57,66 +66,33 @@ public class MariaManager {
     public boolean connect() {
         //DB 연결과정
         try {
-            Class.forName(driver);
-            dbConnector = DriverManager.getConnection(url, id, password);
+            String filePath = "mybatis_config.xml";
+            Reader reader = Resources.getResourceAsReader(filePath);
 
-            if (dbConnector != null) {
+            if(sqlSessionFactory == null) {
+                sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
                 logger.info("DBServer is connected");
             }
-        } catch (ClassNotFoundException e) {
-            logger.error("Driver load fail");
+        } catch (FileNotFoundException fnfe) {
+            logger.error("Config file not found");
 
             return false;
-        } catch (SQLException e) {      //데이터 베이스가 존재하지 않는 경우
+        } catch (IOException ie) {
             logger.error("DB connection fail");
-            logger.info("Database doesn't exist. Create database...");
 
-            boolean creationSuccess = createDatabase(database);
-
-            if(creationSuccess) {
-                logger.info("Database created : {}", database);
-                boolean reConnectSuccess = reConnect();
-
-                return reConnectSuccess;
-            } else {
-                logger.error("Database creation error");
-            }
+            return false;
         }
+
+        SqlSession sqlSession = sqlSessionFactory.openSession(true);
+        dao = sqlSession.getMapper(MariaDAO.class);
 
         return true;
     }
 
-    private boolean reConnect() {
-        logger.info("Reconnect to Database : ");
-
-        try {
-            url = "jdbc:mariadb://" + ip + ":" + port + "/" + database;
-            dbConnector = DriverManager.getConnection(url, id, password);
-
-            if (dbConnector != null) {
-                logger.info("DBServer is connected");
-
-                return true;
-            }
-        } catch(SQLException se) {
-            return false;
-        }
-
-        return false;
-    }
 
     private boolean createDatabase(String dataBase) {
         try {
-            url = "jdbc:mariadb://" + ip + ":" + port;
-            dbConnector = DriverManager.getConnection(url, id, password);
-
-            String query = "CREATE DATABASE " + "`" + dataBase + "`";
-            sql = dbConnector.prepareStatement(query);
-            resultSet = sql.executeQuery();
-        } catch(SQLException e) {
-            logger.error("Database creation error");
-
-            return false;
+            dao.createDB(dataBase);
         } catch(Exception e) {
             logger.error("Database creation error");
 
