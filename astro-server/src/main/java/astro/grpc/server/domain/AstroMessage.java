@@ -1,9 +1,12 @@
 package astro.grpc.server.domain;
 
+import lombok.Setter;
+
+@Setter
 public class AstroMessage {
-    private String topic;
-    private int index;
-    private String datetime;
     private String uuid;
+    private String datetime;
+    private int index;
+    private String topic;
     private String message;
 }

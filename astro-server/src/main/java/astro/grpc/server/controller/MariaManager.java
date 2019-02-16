@@ -2,6 +2,7 @@ package astro.grpc.server.controller;
 
 import astro.grpc.server.Server;
 import astro.grpc.server.dao.MariaDAO;
+import astro.grpc.server.domain.AstroMessage;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -16,7 +17,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 
 public class MariaManager {
-    private SqlSessionFactory sqlSessionFactory;
+    private static SqlSessionFactory sqlSessionFactory;
     private MariaDAO dao;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private PreparedStatement sql = null;
@@ -83,24 +84,21 @@ public class MariaManager {
             return false;
         }
 
-        SqlSession sqlSession = sqlSessionFactory.openSession(true);
-        dao = sqlSession.getMapper(MariaDAO.class);
-
         return true;
     }
 
 
-    private boolean createDatabase(String dataBase) {
-        try {
-            dao.createDB(dataBase);
-        } catch(Exception e) {
-            logger.error("Database creation error");
-
-            return false;
-        }
-
-        return true;
-    }
+//    private boolean createDatabase(String dataBase) {
+//        try {
+//            dao.createDB(dataBase);
+//        } catch(Exception e) {
+//            logger.error("Database creation error");
+//
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
     public boolean store(astro.com.message.AstroMessage value) {
         if (isFull()) {
@@ -110,70 +108,61 @@ public class MariaManager {
 
         String table = selectTable(value.getTopic());
 
+
         try {
-            sql = setInsertQuery(table, value);
-            resultSet = sql.executeQuery();
-            storeDisplay(dateTransform(value.getDatetime()));
-        } catch (SQLException e) {
-            logger.error("Storing error");
-            logger.info("Table is not on DB. Create Table...");
+            SqlSession sqlSession = sqlSessionFactory.openSession(true);
+            dao = sqlSession.getMapper(MariaDAO.class);
 
-            boolean createSuccess = createTable(table);
-            if(createSuccess) {
-                logger.info("Table created");
-                store(value);
-            }
+            AstroMessage storingMessage = setMessage(value);
 
-        } catch(Exception e) {
-            logger.error("Storing error");            //invalid value
+            dao.insert(storingMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
 
-            return false;
+//            logger.error("Storing error");
+//            logger.info("Table is not on DB. Create Table...");
+
+
+
+//            boolean createSuccess = createTable(table);
+//            if(createSuccess) {
+//                logger.info("Table created");
+//                store(value);
+//            } else {
+//                logger.info("Storing error");
+//
+//                return false;
+//            }
         }
 
         return true;
     }
 
-    public PreparedStatement setInsertQuery(String table, astro.com.message.AstroMessage value) {
-        String query = null;
+    public AstroMessage setMessage(astro.com.message.AstroMessage value) {
         String dateTime = dateTransform(value.getDatetime());
 
-        query = "insert into " + "`" + table + "`" + " values (?, ?, ?, ?, ?)";
+        AstroMessage astroMessage = new AstroMessage();
 
-        try {
-            sql = dbConnector.prepareStatement(query);
-            sql.setString(1, value.getUuid());
-            sql.setString(2, dateTime);
-            sql.setInt(3, value.getIndex());
-            sql.setString(4, value.getTopic());
-            sql.setString(5, value.getMessage());
-        } catch (SQLException e) {
-            logger.error("SQL error");
+        astroMessage.setUuid(value.getUuid());
+        astroMessage.setDatetime(dateTime);
+        astroMessage.setIndex(value.getIndex());
+        astroMessage.setTopic(value.getTopic());
+        astroMessage.setMessage(value.getMessage());
 
-            return null;
-        }
-
-        return sql;
+        return astroMessage;
     }
 
-    private boolean createTable(String table) {
-        try {
-            String query = "CREATE TABLE " + "`" + table + "`"
-                    + "(`" + Server.config.get("table.uuid") + "`" + " char(50) not null,"
-                    + "`" + Server.config.get("table.dateTime") + "`" +  " datetime,"
-                    + "`" + Server.config.get("table.index") + "`" + " int(11),"
-                    + "`" + Server.config.get("table.topic") + "`" + " char(50),"
-                    + "`" + table + "message" + "`" + " longtext,"
-                    + "primary key (`uuid`))";
-
-            sql = dbConnector.prepareStatement(query);
-            resultSet = sql.executeQuery();
-        } catch(SQLException e) {
-            logger.error("Table creation error");
-
-            return false;
-        }
-        return true;
-    }
+//    private boolean createTable(String table) {
+//        try {
+//            dao.createTable(table);
+//        } catch(Exception e) {
+//            logger.error("Table creation error");
+//
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
     private String dateTransform(long time) {
         long serverTime = time;
