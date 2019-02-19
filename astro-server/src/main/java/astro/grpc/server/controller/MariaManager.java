@@ -17,7 +17,8 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 
 public class MariaManager {
-    private static SqlSessionFactory sqlSessionFactory;
+    private SqlSessionFactory sqlSessionFactory;
+    private SqlSession sqlSession;
     private MariaDAO dao;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private PreparedStatement sql = null;
@@ -84,21 +85,11 @@ public class MariaManager {
             return false;
         }
 
+        sqlSession = sqlSessionFactory.openSession(true);
+
         return true;
     }
 
-
-//    private boolean createDatabase(String dataBase) {
-//        try {
-//            dao.createDB(dataBase);
-//        } catch(Exception e) {
-//            logger.error("Database creation error");
-//
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
     public boolean store(astro.com.message.AstroMessage value) {
         if (isFull()) {
@@ -106,33 +97,16 @@ public class MariaManager {
             return false;
         }
 
+        dao = sqlSession.getMapper(MariaDAO.class);
         String table = selectTable(value.getTopic());
 
+        createTable(table);
 
         try {
-            SqlSession sqlSession = sqlSessionFactory.openSession(true);
-            dao = sqlSession.getMapper(MariaDAO.class);
-
             AstroMessage storingMessage = setMessage(value);
-
-            dao.insert(storingMessage);
-        } catch (Exception e) {
+            dao.insert(table, storingMessage);
+        } catch(Exception e) {
             e.printStackTrace();
-
-//            logger.error("Storing error");
-//            logger.info("Table is not on DB. Create Table...");
-
-
-
-//            boolean createSuccess = createTable(table);
-//            if(createSuccess) {
-//                logger.info("Table created");
-//                store(value);
-//            } else {
-//                logger.info("Storing error");
-//
-//                return false;
-//            }
         }
 
         return true;
@@ -152,17 +126,17 @@ public class MariaManager {
         return astroMessage;
     }
 
-//    private boolean createTable(String table) {
-//        try {
-//            dao.createTable(table);
-//        } catch(Exception e) {
-//            logger.error("Table creation error");
-//
-//            return false;
-//        }
-//
-//        return true;
-//    }
+    private boolean createTable(String table) {
+        try {
+            dao.createTable(table);
+        } catch(Exception e) {
+            logger.error("Table creation error");
+
+            return false;
+        }
+
+        return true;
+    }
 
     private String dateTransform(long time) {
         long serverTime = time;

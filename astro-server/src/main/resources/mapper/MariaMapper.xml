@@ -13,22 +13,22 @@
         <result property="message" column="message"/>
     </resultMap>
 
-    <!--<select id="createDB" parameterType="string">-->
-        <!--CREATE DATABASE #{dataBase};-->
+    <!--<select id="connectionTest" parameterType="string" resultType="integer">-->
+        <!--SELECT 1 FROM #{table};-->
     <!--</select>-->
 
-    <!--<select id="createTable" parameterType="string">-->
-        <!--CREATE TABLE #{table} (-->
-            <!--uuid char(50) NOT NULL,-->
-            <!--datetime datetime NOT NULL,-->
-            <!--index int(11) NOT NULL,-->
-            <!--topic char(50) NOT NULL,-->
-            <!--message longtext NOT NULL,-->
-            <!--PRIMARY KEY(uuid)-->
-        <!--);-->
-    <!--</select>-->
-    <!---->
-    <insert id="insert" parameterType="astro.grpc.server.domain.AstroMessage"  useGeneratedKeys="true" keyProperty="list_id">
-        INSERT INTO mybatis_test VALUES (#{uuid}, #{datetime}, #{index}, #{topic}, #{message});
+    <insert id="createTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS data.${table} (
+            uuid CHAR(50) NOT NULL,
+            datetime DATETIME NOT NULL,
+            `index` INT(11) NOT NULL,
+            topic CHAR(50) NOT NULL,
+            message LONGTEXT NULL,
+            PRIMARY KEY (uuid)
+        );
+    </insert>
+
+    <insert id="insert" parameterType="AstroMessage" useGeneratedKeys="true">
+        INSERT INTO #{table} VALUES (#{astroMessage.uuid}, #{astroMessage.datetime}, #{astroMessage.index}, #{astroMessage.topic}, #{astroMessage.message});
     </insert>
 </mapper>
