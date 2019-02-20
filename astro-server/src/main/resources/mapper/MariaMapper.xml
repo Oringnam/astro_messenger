@@ -29,6 +29,6 @@
     </insert>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="list_id">
-        INSERT INTO #{table} VALUES (#{astroMessage.uuid}, #{astroMessage.datetime}, #{astroMessage.index}, #{astroMessage.topic}, #{astroMessage.message});
+        INSERT INTO ${table} VALUES (#{astroMessage.uuid}, #{astroMessage.datetime}, #{astroMessage.index}, #{astroMessage.topic}, #{astroMessage.message});
     </insert>
 </mapper>
