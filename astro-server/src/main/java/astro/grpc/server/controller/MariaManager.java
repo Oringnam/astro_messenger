@@ -105,6 +105,7 @@ public class MariaManager {
         try {
             AstroMessage storingMessage = setMessage(value);
             dao.insert(table, storingMessage);
+            storeDisplay(storingMessage.getDatetime());
         } catch(Exception e) {
             e.printStackTrace();
         }
